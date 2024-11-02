@@ -13,9 +13,9 @@ dotenv.config({
   path: "./config.env",
 });
 
-mongoose.connect(process.env.DB_URI).then(() => {
-    console.log("Connected to MongoDB...");
-  }).catch((err) => {
+mongoose.connect(process.env.DB_URI).then((conn) => {
+  console.log(`Connected to MongoDB: ${conn.connection.host}`);
+}).catch((err) => {
     console.log("Error connecting to MongoDB...", err);
   });
 
