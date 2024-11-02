@@ -15,8 +15,10 @@ dotenv.config({
 
 mongoose.connect(process.env.DB_URI).then((conn) => {
   console.log(`Connected to MongoDB: ${conn.connection.host}`);
-}).catch((err) => {
-    console.log("Error connecting to MongoDB...", err);
+  })
+  .catch((err) => {
+    console.error(`Error connecting to MongoDB: ${err}`);
+    process.exit(1);
   });
 
 app.get("/", (req, res) => {
