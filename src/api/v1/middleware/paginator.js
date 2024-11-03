@@ -1,4 +1,4 @@
-import ApiResponse from '../../../../utils/apiResponse.js';
+import ApiResponse from '#utils/apiResponse.js';
 
 const paginator = (defaultItemsPerPage = 10) => (req, res, next) => {
     const page = parseInt(req.query.page) || 1;

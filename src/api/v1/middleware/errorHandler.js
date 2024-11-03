@@ -1,5 +1,5 @@
-import Logger from '../../../../utils/logger.js';
-import ApiResponse from '../../../../utils/apiResponse.js';
+import Logger from '#utils/logger.js';
+import ApiResponse from '#utils/apiResponse.js';
 
 export const errorHandler = (err, req, res, next) => {
     Logger.error(`Error: ${err.message}`);

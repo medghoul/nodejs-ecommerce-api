@@ -1,6 +1,6 @@
-import Category from '../models/category.model.js';
-import Logger from '../../../../utils/logger.js';
-import ApiResponse from '../../../../utils/apiResponse.js';
+import Category from '#models/category.model.js';
+import Logger from '#utils/logger.js';
+import ApiResponse from '#utils/apiResponse.js';
 import slugify from 'slugify';
 import asyncHandler from 'express-async-handler';
 
