@@ -1,6 +1,7 @@
 import Category from '../models/category.model.js';
 import Logger from '../../../../utils/logger.js';
 import ApiResponse from '../../../../utils/apiResponse.js';
+import slugify from 'slugify';
 
 // @desc Get all categories
 // @route GET /api/v1/categories
@@ -28,8 +29,22 @@ export async function getCategories(req, res, next) {
 // @access Private
 export async function createCategory(req, res, next) {
     try {
-        const category = await Category.create(req.body);
-        Logger.info(`New category created: ${category.name}`);
+        const { name } = req.body;
+        
+        // Genera lo slug dal nome
+        const slug = slugify(name, {
+            lower: true,      // converti in minuscolo
+            strict: true,     // rimuovi caratteri speciali
+            trim: true        // rimuovi spazi iniziali e finali
+        });
+        
+        // Crea la categoria con lo slug generato
+        const category = await Category.create({ 
+            ...req.body,
+            slug 
+        });
+        
+        Logger.info(`New category created: ${category.name} with slug: ${category.slug}`);
         
         return res.status(201).json(
             ApiResponse.success(
