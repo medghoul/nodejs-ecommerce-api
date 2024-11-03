@@ -8,14 +8,23 @@ import asyncHandler from 'express-async-handler';
 // @route GET /api/v1/categories
 // @access Public
 export const getCategories = asyncHandler(async (req, res) => {
-    const categories = await Category.find();
+    const { skip, limit, getPagingData } = req.pagination;
+    
+    const totalItems = await Category.countDocuments();
+    const categories = await Category.find()
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 });
+
+    const paginatedData = getPagingData(totalItems, categories);
+    
     Logger.info('Categories retrieved successfully');
     
     res.status(200).json(
         ApiResponse.success(
             200,
             'Categories retrieved successfully',
-            categories
+            paginatedData
         )
     );
 });
