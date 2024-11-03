@@ -2,112 +2,94 @@ import Category from '../models/category.model.js';
 import Logger from '../../../../utils/logger.js';
 import ApiResponse from '../../../../utils/apiResponse.js';
 import slugify from 'slugify';
+import asyncHandler from 'express-async-handler';
 
 // @desc Get all categories
 // @route GET /api/v1/categories
 // @access Public
-export async function getCategories(req, res, next) {
-    try {
-        const categories = await Category.find();
-        Logger.info('Categories retrieved successfully');
-        
-        return res.status(200).json(
-            ApiResponse.success(
-                200,
-                'Categories retrieved successfully',
-                categories
-            )
-        );
-    } catch (err) {
-        Logger.error(`Error retrieving categories: ${err.message}`);
-        next(err);
-    }
-}
+export const getCategories = asyncHandler(async (req, res) => {
+    const categories = await Category.find();
+    Logger.info('Categories retrieved successfully');
+    
+    res.status(200).json(
+        ApiResponse.success(
+            200,
+            'Categories retrieved successfully',
+            categories
+        )
+    );
+});
 
 // @desc Create a new category
 // @route POST /api/v1/categories
 // @access Private
-export async function createCategory(req, res, next) {
-    try {
-        const { name } = req.body;
-        
-        // Genera lo slug dal nome
-        const slug = slugify(name, {
-            lower: true,      // converti in minuscolo
-            strict: true,     // rimuovi caratteri speciali
-            trim: true        // rimuovi spazi iniziali e finali
-        });
-        
-        // Crea la categoria con lo slug generato
-        const category = await Category.create({ 
-            ...req.body,
-            slug 
-        });
-        
-        Logger.info(`New category created: ${category.name} with slug: ${category.slug}`);
-        
-        return res.status(201).json(
-            ApiResponse.success(
-                201,
-                'Category created successfully',
-                category
-            )
-        );
-    } catch (err) {
-        Logger.error(`Error creating category: ${err.message}`);
-        next(err);
-    }
-}
+export const createCategory = asyncHandler(async (req, res) => {
+    const { name } = req.body;
+    
+    const slug = slugify(name, {
+        lower: true,
+        strict: true,
+        trim: true
+    });
+    
+    const category = await Category.create({ 
+        ...req.body,
+        slug 
+    });
+    
+    Logger.info(`New category created: ${category.name} with slug: ${category.slug}`);
+    
+    res.status(201).json(
+        ApiResponse.success(
+            201,
+            'Category created successfully',
+            category
+        )
+    );
+});
 
 // @desc Update a category
 // @route PUT /api/v1/categories/:id
 // @access Private
-export async function updateCategory(req, res, next) {
-    try {
-        const category = await Category.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true, runValidators: true }
-        );
+export const updateCategory = asyncHandler(async (req, res) => {
+    const category = await Category.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true, runValidators: true }
+    );
 
-        if (!category) {
-            return res.status(404).json(
-                ApiResponse.error(404, 'Category not found')
-            );
-        }
-
-        Logger.info(`Category updated: ${req.params.id}`);
-        
-        return res.status(200).json(
-            ApiResponse.success(
-                200,
-                'Category updated successfully',
-                category
-            )
-        );
-    } catch (err) {
-        Logger.error(`Error updating category: ${err.message}`);
-        next(err);
+    if (!category) {
+        res.status(404);
+        throw new Error('Category not found');
     }
-}
+
+    Logger.info(`Category updated: ${req.params.id}`);
+    
+    res.status(200).json(
+        ApiResponse.success(
+            200,
+            'Category updated successfully',
+            category
+        )
+    );
+});
 
 // @desc Delete a category
 // @route DELETE /api/v1/categories/:id
 // @access Private
-export async function deleteCategory(req, res) {
-    try {
-        await Category.findByIdAndDelete(req.params.id);
-        Logger.info(`Category deleted: ${req.params.id}`);
-        res.status(200).json({ message: 'Category deleted' });
-    } catch (err) {
-        Logger.error(`Error deleting category: ${err.message}`);
-        res.status(500).json({ message: err.message });
+export const deleteCategory = asyncHandler(async (req, res) => {
+    const category = await Category.findByIdAndDelete(req.params.id);
+    
+    if (!category) {
+        res.status(404);
+        throw new Error('Category not found');
     }
-}
 
-export default {
-    getCategories,
-    createCategory,
-    updateCategory,
-    deleteCategory
-};
+    Logger.info(`Category deleted: ${req.params.id}`);
+    res.status(200).json(
+        ApiResponse.success(
+            200,
+            'Category deleted successfully'
+        )
+    );
+});
