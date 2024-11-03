@@ -1,4 +1,4 @@
-import Category from '../models/category.model';
+import Category from '../models/category.model.js';
 
 // @desc Get all categories
 // @route GET /api/v1/categories
