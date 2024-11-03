@@ -1,9 +1,9 @@
 import express from 'express';
-import config from './config/config.js';
+import config from '#config/config.js';
 import morgan from 'morgan';
-import connectDB from './config/database.js';
-import categoryRoutes from './src/api/v1/routes/categories.route.js';
-import Logger from './utils/logger.js';
+import connectDB from '#config/database.js';
+import categoryRoutes from '#routes/categories.route.js';
+import Logger from '#utils/logger.js';
 
 const app = express();
 

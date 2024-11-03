@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import paginator from '../middleware/paginator.js'
+import paginator from '#middleware/paginator.js'
 const router = Router();
 import { getCategories, createCategory, updateCategory, deleteCategory } from '../controllers/categories.controller.js';
 
