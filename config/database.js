@@ -4,7 +4,11 @@ import Logger from '../utils/logger.js';
 
 const connectDB = async () => {
     try {
-        const conn = await connect(config.MONGO_URI);
+        const conn = await connect(config.MONGO_URI, {
+            dbName: config.DB_NAME,
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
         Logger.info(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
         Logger.error(`Error: ${error.message}`);
