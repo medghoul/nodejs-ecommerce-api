@@ -15,5 +15,6 @@ export default {
     NODE_ENV: process.env.NODE_ENV,
     PORT: process.env.PORT || 5000,
     MONGO_URI: process.env.DB_URI,
-    API_VERSION: '/api/v1'
+    API_VERSION: '/api/v1',
+    DB_NAME: process.env.DB_NAME
 };
