@@ -63,7 +63,7 @@ export const createCategory = asyncHandler(async (req, res) => {
 export const updateCategory = asyncHandler(async (req, res) => {
     const category = await Category.findByIdAndUpdate(
         req.params.id,
-        req.body,
+        { ...req.body, slug: slugify(req.body.name, { lower: true, strict: true, trim: true }) },
         { new: true, runValidators: true }
     );
 
@@ -99,6 +99,46 @@ export const deleteCategory = asyncHandler(async (req, res) => {
         ApiResponse.success(
             200,
             'Category deleted successfully'
+        )
+    );
+});
+
+// @desc Get a category by slug
+// @route GET /api/v1/categories/:slug
+// @access Public
+export const getCategoryBySlug = asyncHandler(async (req, res) => {
+    const category = await Category.findOne({ slug: req.params.slug });
+    
+    if (!category) {
+        res.status(404);
+        throw new Error('Category not found');
+    }
+
+    res.status(200).json(
+        ApiResponse.success(
+            200,
+            'Category retrieved successfully',
+            category
+        )
+    );
+});
+
+// @desc Get a category by id
+// @route GET /api/v1/categories/:id
+// @access Public
+export const getCategoryById = asyncHandler(async (req, res) => {
+    const category = await Category.findById(req.params.id);
+
+    if (!category) {
+        res.status(404);
+        throw new Error('Category not found');
+    }
+
+    res.status(200).json(
+        ApiResponse.success(
+            200,
+            'Category retrieved successfully',
+            category
         )
     );
 });
