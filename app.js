@@ -33,6 +33,23 @@ app.all('*', (req, res, next) => {
 // Error handler middleware (should be last)
 app.use(globalErrorHandler);
 
-app.listen(config.PORT, () => {
+const server = app.listen(config.PORT, () => {
     Logger.info(`Server is running on port ${config.PORT}`);
+});
+
+// Unhandled rejection
+process.on('unhandledRejection', (reason, promise) => {
+    Logger.error(`Unhandled Rejection at: ${promise} reason: ${reason}`);
+    server.close(() => {
+        process.exit(1);
+    });
+});
+
+// Uncaught exception
+process.on('uncaughtException', (error) => {
+    Logger.error(`Uncaught Exception: ${error}`);
+    server.close(() => {
+        Logger.error('Shutting down...');
+        process.exit(1);
+    });
 });
