@@ -4,6 +4,8 @@ import morgan from 'morgan';
 import connectDB from '#config/database.js';
 import categoryRoutes from '#routes/categories.route.js';
 import Logger from '#utils/logger.js';
+import ApiError from '#utils/api.error.js';
+import globalErrorHandler from '#middleware/error.middleware.js';
 
 const app = express();
 
@@ -22,12 +24,32 @@ connectDB();
 // Routes
 app.use('/api/v1/categories', categoryRoutes);
 
-// Error handler middleware (should be last)
-app.use((err, req, res, next) => {
-    Logger.error(`Error: ${err.message}`);
-    res.status(500).json({ message: err.message });
+// Not found middleware
+app.all('*', (req, res, next) => {
+    Logger.error(`Route not found: ${req.originalUrl}`);
+    next(new ApiError(404, 'Route not found'));
 });
 
-app.listen(config.PORT, () => {
+// Error handler middleware (should be last)
+app.use(globalErrorHandler);
+
+const server = app.listen(config.PORT, () => {
     Logger.info(`Server is running on port ${config.PORT}`);
+});
+
+// Unhandled rejection
+process.on('unhandledRejection', (reason, promise) => {
+    Logger.error(`Unhandled Rejection at: ${promise} reason: ${reason}`);
+    server.close(() => {
+        process.exit(1);
+    });
+});
+
+// Uncaught exception
+process.on('uncaughtException', (error) => {
+    Logger.error(`Uncaught Exception: ${error}`);
+    server.close(() => {
+        Logger.error('Shutting down...');
+        process.exit(1);
+    });
 });
