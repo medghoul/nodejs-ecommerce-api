@@ -1,6 +1,6 @@
 import { connect } from 'mongoose';
-import config from './config.js';
-import Logger from '../utils/logger.js';
+import config from '#config/config.js';
+import Logger from '#utils/logger.js';
 
 const connectDB = async () => {
     try {
