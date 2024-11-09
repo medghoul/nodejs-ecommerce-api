@@ -10,7 +10,8 @@
     "#middleware/*": "./src/api/v1/middleware/*",
     "#controllers/*": "./src/api/v1/controllers/*",
     "#models/*": "./src/api/v1/models/*",
-    "#routes/*": "./src/api/v1/routes/*"
+    "#routes/*": "./src/api/v1/routes/*",
+    "#validations/*": "./src/api/v1/validations/*"
   },
   "exports": "./app.js",
   "scripts": {
@@ -27,6 +28,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-async-handler": "^1.2.0",
+    "express-validator": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
     "module-alias": "^2.2.3",
     "mongoose": "^8.8.0",
