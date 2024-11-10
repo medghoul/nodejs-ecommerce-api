@@ -1,7 +1,7 @@
 import { Router } from "express";
 import paginator from "#middleware/paginator.js";
 import { validate } from "#middleware/validate.js";
-import { categoryValidation } from "#validations/category.validation.js";
+import categoryValidation from "#validations/category.validation.js";
 import {
   getCategories,
   createCategory,

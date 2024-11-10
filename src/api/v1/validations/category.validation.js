@@ -38,7 +38,7 @@ const slugValidation = param("slug")
   .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
   .withMessage("Invalid slug format");
 
-export const categoryValidation = {
+export default {
   createCategory: [nameValidation, imageValidation],
   updateCategory: [idValidation, optionalNameValidation, imageValidation],
   getCategoryById: [idValidation],

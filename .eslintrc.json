@@ -1,0 +1,63 @@
+{
+  "extends": ["airbnb", "prettier", "plugin:node/recommended"],
+  "plugins": ["prettier"],
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"],
+        "moduleDirectory": ["node_modules", "."],
+        "paths": ["."],
+        "alias": {
+          "#config": "./config",
+          "#utils": "./utils",
+          "#services": "./services",
+          "#middleware": "./src/api/v1/middleware",
+          "#controllers": "./src/api/v1/controllers",
+          "#models": "./src/api/v1/models",
+          "#routes": "./src/api/v1/routes",
+          "#validations": "./src/api/v1/validations"
+        }
+      }
+    }
+  },
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    "spaced-comment": "off",
+    "no-console": "off",
+    "consistent-return": "off",
+    "func-names": "off",
+    "object-shorthand": "off",
+    "no-process-exit": "off",
+    "no-param-reassign": "off",
+    "no-return-await": "off",
+    "no-underscore-dangle": "off",
+    "class-methods-use-this": "off",
+    "no-undef": "warn",
+    "import/no-unresolved": "error",
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
+    "prefer-destructuring": ["error", { "object": true, "array": false }],
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "req|res|next|val" }],
+    "prettier/prettier": ["error", {
+      "trailingComma": "none",
+      "endOfLine": "auto",
+        "semi": true,
+        "singleQuote": false
+      }
+    ],
+    "node/no-unsupported-features/es-syntax": ["error", {
+      "ignores": ["modules"]
+    }]
+  }
+}
