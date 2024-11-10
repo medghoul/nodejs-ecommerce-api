@@ -35,7 +35,7 @@
     "no-return-await": "off",
     "no-underscore-dangle": "off",
     "class-methods-use-this": "off",
-    "no-undef": "warn",
+    "no-undef": "error",
     "import/no-unresolved": "error",
     "import/extensions": [
       "error",
