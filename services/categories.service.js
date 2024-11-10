@@ -1,10 +1,10 @@
-import Category from '#models/category.model.js';
+import Category from "#models/category.model.js";
 
 export const getCategories = async () => {
-    const categories = await Category.find();
-    return categories;
+  const categories = await Category.find();
+  return categories;
 };
 
 export default {
-    getCategories
+  getCategories,
 };

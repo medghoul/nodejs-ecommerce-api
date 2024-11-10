@@ -2,22 +2,22 @@ import Logger from "#utils/logger.js";
 import ApiResponse from "#utils/api.response.js";
 
 const handleMongooseErrors = (err) => {
-  if (err.name === 'CastError') {
-    return { statusCode: 400, message: 'Invalid ID format' };
+  if (err.name === "CastError") {
+    return { statusCode: 400, message: "Invalid ID format" };
   }
-  
-  if (err.name === 'ValidationError') {
+
+  if (err.name === "ValidationError") {
     const messages = Object.values(err.errors)
-      .map(error => error.message)
-      .join(', ');
+      .map((error) => error.message)
+      .join(", ");
     return { statusCode: 400, message: messages };
   }
-  
+
   if (err.code === 11000) {
     const field = Object.keys(err.keyPattern)[0];
-    return { 
-      statusCode: 409, 
-      message: `Duplicate ${field} value. Please use another value` 
+    return {
+      statusCode: 409,
+      message: `Duplicate ${field} value. Please use another value`,
     };
   }
 
@@ -26,11 +26,12 @@ const handleMongooseErrors = (err) => {
 
 const globalErrorHandler = (err, req, res, next) => {
   Logger.error(`Error: ${err.message}`);
-  
+
   const mongooseError = handleMongooseErrors(err);
-  
+
   const statusCode = mongooseError?.statusCode || err.statusCode || 500;
-  const message = mongooseError?.message || err.message || 'Internal server error';
+  const message =
+    mongooseError?.message || err.message || "Internal server error";
 
   if (process.env.NODE_ENV === "development") {
     return res.status(statusCode).json({
@@ -42,9 +43,7 @@ const globalErrorHandler = (err, req, res, next) => {
     });
   }
 
-  return res.status(statusCode).json(
-    ApiResponse.error(statusCode, message)
-  );
+  return res.status(statusCode).json(ApiResponse.error(statusCode, message));
 };
 
 export default globalErrorHandler;
