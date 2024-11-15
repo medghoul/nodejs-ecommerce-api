@@ -50,7 +50,8 @@ export const getSubCategories = asyncHandler(async (req, res, next) => {
   const subCategories = await SubCategory.find({})
     .skip(skip)
     .limit(limit)
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .populate({ path: "category", select: "name" });
 
   const paginatedData = getPagingData(totalItems, subCategories);
 
@@ -73,7 +74,10 @@ export const getSubCategories = asyncHandler(async (req, res, next) => {
 export const getSubCategoryById = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
-  const subCategory = await SubCategory.findById(id);
+  const subCategory = await SubCategory.findById(id).populate({
+    path: "category",
+    select: "_id name",
+  });
   if (!subCategory) {
     throw new ApiError(404, "Sub category not found");
   }
@@ -144,7 +148,10 @@ export const deleteSubCategoryById = asyncHandler(async (req, res, next) => {
 export const getSubCategoryBySlug = asyncHandler(async (req, res, next) => {
   const { slug } = req.params;
 
-  const subCategory = await SubCategory.findOne({ slug });
+  const subCategory = await SubCategory.findOne({ slug }).populate({
+    path: "category",
+    select: "_id name",
+  });
   if (!subCategory) {
     throw new ApiError(404, "Sub category not found");
   }
