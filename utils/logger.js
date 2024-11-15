@@ -5,7 +5,7 @@ const levels = {
   warn: 1,
   info: 2,
   http: 3,
-  debug: 4
+  debug: 4,
 };
 
 const level = () => {
@@ -18,7 +18,7 @@ const emojis = {
   warn: "\x1b[33m⚠️\x1b[0m",
   info: "\x1b[32m💡\x1b[0m",
   http: "\x1b[35m🌐\x1b[0m",
-  debug: "\x1b[37m🐛\x1b[0m"
+  debug: "\x1b[37m🐛\x1b[0m",
 };
 
 const colors = {
@@ -26,7 +26,7 @@ const colors = {
   warn: "yellow",
   info: "green",
   http: "magenta",
-  debug: "white"
+  debug: "white",
 };
 
 winston.addColors(colors);
@@ -46,28 +46,28 @@ const customFormat = winston.format.printf(
 
 const format = winston.format.combine(
   winston.format.timestamp({
-    format: "YYYY-MM-DD HH:mm:ss:SSS"
+    format: "YYYY-MM-DD HH:mm:ss:SSS",
   }),
   customFormat
 );
 
 const transports = [
   new winston.transports.Console({
-    format: format
+    format: format,
   }),
   new winston.transports.File({
     filename: "logs/error.log",
-    level: "error"
+    level: "error",
   }),
   new winston.transports.File({
-    filename: "logs/all.log"
-  })
+    filename: "logs/all.log",
+  }),
 ];
 
 const Logger = winston.createLogger({
   level: level(),
   levels,
-  transports
+  transports,
 });
 
 export default Logger;

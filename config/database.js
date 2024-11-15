@@ -7,7 +7,7 @@ const connectDB = async () => {
     const conn = await connect(config.MONGO_URI, {
       dbName: config.DB_NAME,
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
     });
     Logger.info(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {

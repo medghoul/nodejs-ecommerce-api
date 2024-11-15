@@ -41,12 +41,12 @@ export const createCategory = asyncHandler(async (req, res, next) => {
   const slug = slugify(name, {
     lower: true,
     strict: true,
-    trim: true
+    trim: true,
   });
 
   const category = await Category.create({
     ...req.body,
-    slug
+    slug,
   });
 
   Logger.info(
@@ -66,7 +66,7 @@ export const updateCategory = asyncHandler(async (req, res, next) => {
     req.params.id,
     {
       ...req.body,
-      slug: slugify(req.body.name, { lower: true, strict: true, trim: true })
+      slug: slugify(req.body.name, { lower: true, strict: true, trim: true }),
     },
     { new: true, runValidators: true }
   );
