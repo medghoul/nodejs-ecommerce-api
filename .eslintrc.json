@@ -49,15 +49,20 @@
     ],
     "prefer-destructuring": ["error", { "object": true, "array": false }],
     "no-unused-vars": ["warn", { "argsIgnorePattern": "req|res|next|val" }],
-    "prettier/prettier": ["error", {
-      "trailingComma": "none",
-      "endOfLine": "auto",
+    "prettier/prettier": [
+      "error",
+      {
+        "trailingComma": "none",
+        "endOfLine": "auto",
         "semi": true,
         "singleQuote": false
       }
     ],
-    "node/no-unsupported-features/es-syntax": ["error", {
-      "ignores": ["modules"]
-    }]
+    "node/no-unsupported-features/es-syntax": [
+      "error",
+      {
+        "ignores": ["modules"]
+      }
+    ]
   }
 }
