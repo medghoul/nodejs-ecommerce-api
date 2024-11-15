@@ -8,7 +8,7 @@ import {
   updateCategory,
   deleteCategory,
   getCategoryBySlug,
-  getCategoryById,
+  getCategoryById
 } from "#controllers/categories.controller.js";
 
 const router = Router();

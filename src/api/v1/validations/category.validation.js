@@ -43,5 +43,5 @@ export default {
   updateCategory: [idValidation, optionalNameValidation, imageValidation],
   getCategoryById: [idValidation],
   deleteCategoryById: [idValidation],
-  getCategoryBySlug: [slugValidation],
+  getCategoryBySlug: [slugValidation]
 };
