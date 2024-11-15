@@ -27,8 +27,8 @@ const paginator =
         totalPages: Math.ceil(totalItems / limit),
         itemsPerPage: limit,
         hasNextPage: page * limit < totalItems,
-        hasPreviousPage: page > 1
-      })
+        hasPreviousPage: page > 1,
+      }),
     };
 
     next();

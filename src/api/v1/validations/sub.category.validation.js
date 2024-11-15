@@ -5,8 +5,8 @@ const nameValidation = body("name")
   .trim()
   .notEmpty()
   .withMessage("Category name is required")
-  .isLength({ min: 3 })
-  .withMessage("Name must be at least 3 characters long")
+  .isLength({ min: 2 })
+  .withMessage("Name must be at least 2 characters long")
   .isLength({ max: 32 })
   .withMessage("Name cannot be longer than 32 characters");
 
@@ -15,8 +15,8 @@ const optionalNameValidation = body("name")
   .trim()
   .notEmpty()
   .withMessage("Category name cannot be empty")
-  .isLength({ min: 3 })
-  .withMessage("Name must be at least 3 characters long")
+  .isLength({ min: 2 })
+  .withMessage("Name must be at least 2 characters long")
   .isLength({ max: 32 })
   .withMessage("Name cannot be longer than 32 characters");
 
@@ -38,10 +38,16 @@ const slugValidation = param("slug")
   .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
   .withMessage("Invalid slug format");
 
+const categoryValidation = body("category")
+  .notEmpty()
+  .withMessage("Category is required")
+  .isMongoId()
+  .withMessage("Invalid category ID");
+
 export default {
-  createCategory: [nameValidation, imageValidation],
-  updateCategory: [idValidation, optionalNameValidation, imageValidation],
-  getCategoryById: [idValidation],
-  deleteCategoryById: [idValidation],
-  getCategoryBySlug: [slugValidation],
+  createSubCategory: [nameValidation, categoryValidation],
+  updateSubCategory: [idValidation, optionalNameValidation, imageValidation],
+  getSubCategoryById: [idValidation],
+  deleteSubCategoryById: [idValidation],
+  getSubCategoryBySlug: [slugValidation],
 };

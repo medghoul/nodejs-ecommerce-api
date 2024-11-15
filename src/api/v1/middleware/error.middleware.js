@@ -17,7 +17,7 @@ const handleMongooseErrors = (err) => {
     const field = Object.keys(err.keyPattern)[0];
     return {
       statusCode: 409,
-      message: `Duplicate ${field} value. Please use another value`
+      message: `Duplicate ${field} value. Please use another value`,
     };
   }
 
@@ -39,7 +39,7 @@ const globalErrorHandler = (err, req, res, next) => {
       status: err.status,
       message,
       error: err,
-      stack: err.stack
+      stack: err.stack,
     });
   }
 
