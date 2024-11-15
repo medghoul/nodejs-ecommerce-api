@@ -3,7 +3,7 @@ import morgan from "morgan";
 import config from "#config/config.js";
 import connectDB from "#config/database.js";
 import categoryRoutes from "#routes/categories.route.js";
-import subCategoryRoutes from "#routes/sub.category.route.js";
+import subCategoryRoutes from "#routes/subcategory.route.js";
 import Logger from "#utils/logger.js";
 import ApiError from "#utils/api.error.js";
 import globalErrorHandler from "#middleware/error.middleware.js";

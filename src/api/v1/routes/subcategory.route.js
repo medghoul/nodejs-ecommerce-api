@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validate } from "#middleware/validate.js";
-import subCategoryValidation from "#validations/sub.category.validation.js";
+import subCategoryValidation from "#validations/subcategory.validation.js";
 import paginator from "#middleware/paginator.js";
 import {
   createSubCategory,
@@ -9,7 +9,7 @@ import {
   updateSubCategoryById,
   deleteSubCategoryById,
   getSubCategories,
-} from "#controllers/sub.category.controller.js";
+} from "#controllers/subcategory.controller.js";
 
 const router = Router();
 

@@ -3,7 +3,7 @@ import asyncHandler from "express-async-handler";
 import ApiResponse from "#utils/api.response.js";
 import Logger from "#utils/logger.js";
 import ApiError from "#utils/api.error.js";
-import SubCategory from "#models/sub.category.model.js";
+import SubCategory from "#models/subcategory.model.js";
 
 // @desc Create a new sub category
 // @route POST /api/v1/sub-categories
