@@ -11,7 +11,8 @@ import {
   getSubCategories,
 } from "#controllers/subcategory.controller.js";
 
-const router = Router();
+// Create router with mergeParams option
+const router = Router({ mergeParams: true });
 
 router
   .route("/")

@@ -1,12 +1,12 @@
-import slugify from "slugify";
-import asyncHandler from "express-async-handler";
+import SubCategory from "#models/subcategory.model.js";
+import ApiError from "#utils/api.error.js";
 import ApiResponse from "#utils/api.response.js";
 import Logger from "#utils/logger.js";
-import ApiError from "#utils/api.error.js";
-import SubCategory from "#models/subcategory.model.js";
+import asyncHandler from "express-async-handler";
+import slugify from "slugify";
 
 // @desc Create a new sub category
-// @route POST /api/v1/sub-categories
+// @route POST /api/v1/subcategories
 // @access Private
 export const createSubCategory = asyncHandler(async (req, res, next) => {
   const { name, category } = req.body;
@@ -40,14 +40,21 @@ export const createSubCategory = asyncHandler(async (req, res, next) => {
     );
 });
 
+// @desc Nested route
+// @route GET /api/v1/categories/:categoryId/subcategories
+
 // @desc Get all sub categories
-// @route GET /api/v1/sub-categories
+// @route GET /api/v1/subcategories
 // @access Public
 export const getSubCategories = asyncHandler(async (req, res, next) => {
   const { skip, limit, getPagingData } = req.pagination;
+  const { categoryId } = req.params;
 
-  const totalItems = await SubCategory.countDocuments();
-  const subCategories = await SubCategory.find({})
+  // Create filter object based on categoryId presence
+  const filterObject = categoryId ? { category: categoryId } : {};
+
+  const totalItems = await SubCategory.countDocuments(filterObject);
+  const subCategories = await SubCategory.find(filterObject)
     .skip(skip)
     .limit(limit)
     .sort({ createdAt: -1 })
@@ -69,7 +76,7 @@ export const getSubCategories = asyncHandler(async (req, res, next) => {
 });
 
 // @desc Get a sub category by ID
-// @route GET /api/v1/sub-categories/:id
+// @route GET /api/v1/subcategories/:id
 // @access Public
 export const getSubCategoryById = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
@@ -90,7 +97,7 @@ export const getSubCategoryById = asyncHandler(async (req, res, next) => {
 });
 
 // @desc Update a sub category by ID
-// @route PUT /api/v1/sub-categories/:id
+// @route PUT /api/v1/subcategories/:id
 // @access Private
 export const updateSubCategoryById = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
@@ -125,7 +132,7 @@ export const updateSubCategoryById = asyncHandler(async (req, res, next) => {
 });
 
 // @desc Delete a sub category by ID
-// @route DELETE /api/v1/sub-categories/:id
+// @route DELETE /api/v1/subcategories/:id
 // @access Private
 export const deleteSubCategoryById = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
@@ -143,7 +150,7 @@ export const deleteSubCategoryById = asyncHandler(async (req, res, next) => {
 });
 
 // @desc Get a sub category by slug
-// @route GET /api/v1/sub-categories/:slug
+// @route GET /api/v1/subcategories/:slug
 // @access Public
 export const getSubCategoryBySlug = asyncHandler(async (req, res, next) => {
   const { slug } = req.params;
