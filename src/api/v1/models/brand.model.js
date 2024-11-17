@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-const CategorySchema = new Schema(
+const BrandSchema = new Schema(
   {
     name: {
       type: String,
@@ -10,7 +10,7 @@ const CategorySchema = new Schema(
       minlength: [3, "Name must be at least 3 characters long"],
       maxlength: [32, "Name must be at most 32 characters long"],
     },
-    // Slug is a unique identifier for the category
+    // Slug is a unique identifier for the brand
     slug: {
       type: String,
       required: [true, "Slug is required"],
@@ -23,4 +23,4 @@ const CategorySchema = new Schema(
   { timestamps: true }
 );
 
-export default model("Category", CategorySchema);
+export default model("Brand", BrandSchema);
