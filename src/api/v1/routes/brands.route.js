@@ -20,7 +20,7 @@ router
   .post(validate(brandValidation.createBrand), createBrand);
 
 router.get(
-  "/slug/:slug",
+  "/:slug",
   validate(brandValidation.getBrandBySlug),
   getBrandBySlug
 );
