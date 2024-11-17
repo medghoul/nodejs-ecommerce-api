@@ -5,14 +5,14 @@ const SubCategorySchema = new Schema(
     name: {
       type: String,
       trim: true,
-      required: true,
+      required: [true, "Name is required"],
       unique: [true, "Sub category name must be unique"],
       minlength: [2, "Name must be at least 2 characters long"],
       maxlength: [32, "Name must be at most 32 characters long"],
     },
     slug: {
       type: String,
-      required: true,
+      required: [true, "Slug is required"],
       unique: [true, "Slug must be unique"],
     },
     category: {

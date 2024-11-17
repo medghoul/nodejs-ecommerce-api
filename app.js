@@ -1,12 +1,13 @@
-import express from "express";
-import morgan from "morgan";
 import config from "#config/config.js";
 import connectDB from "#config/database.js";
-import categoryRoutes from "#routes/categories.route.js";
-import subCategoryRoutes from "#routes/sub.category.route.js";
-import Logger from "#utils/logger.js";
-import ApiError from "#utils/api.error.js";
 import globalErrorHandler from "#middleware/error.middleware.js";
+import categoryRoutes from "#routes/categories.route.js";
+import subCategoryRoutes from "#routes/subcategory.route.js";
+import brandRoutes from "#routes/brands.route.js";
+import ApiError from "#utils/api.error.js";
+import Logger from "#utils/logger.js";
+import express from "express";
+import morgan from "morgan";
 
 const app = express();
 
@@ -24,7 +25,8 @@ connectDB();
 
 // Routes
 app.use("/api/v1/categories", categoryRoutes);
-app.use("/api/v1/sub-categories", subCategoryRoutes);
+app.use("/api/v1/subcategories", subCategoryRoutes);
+app.use("/api/v1/brands", brandRoutes);
 
 // Not found middleware
 app.all("*", (req, res, next) => {
