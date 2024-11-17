@@ -35,7 +35,7 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Product price is required"],
       trim: true,
-      max: [20, "Product price must be at most 20 digits"],
+      max: [200000, "Product price must be at most 20 digits"],
     },
     priceAfterDiscount: {
       type: Number,
@@ -67,7 +67,6 @@ const productSchema = new mongoose.Schema(
     },
     ratingsAverage: {
       type: Number,
-      default: 0,
       min: [1, "Rating must be above 1.0"],
       max: [5, "Rating must be below 5.0"],
     },

@@ -1,4 +1,5 @@
 import { body, param } from "express-validator";
+import mongoose from "mongoose";
 
 // Common validation rules
 const titleValidation = body("title")
@@ -100,49 +101,68 @@ const slugValidation = param("slug")
   .withMessage("Invalid slug format");
 
 // Validation rules for product
-const categoryIdValidation = body("categoryId")
+const categoryValidation = body("category")
   .notEmpty()
-  .withMessage("Category ID is required")
+  .withMessage("Category is required")
   .isMongoId()
   .withMessage("Invalid category ID");
 
-const subcategoryIdValidation = body("subcategoryId")
-  .notEmpty()
-  .withMessage("Subcategory ID is required")
-  .isMongoId()
-  .withMessage("Invalid subcategory ID");
+const subcategoriesValidation = body("subcategories")
+  .optional()
+  .isArray()
+  .withMessage("Subcategories must be an array")
+  .custom((value) => {
+    if (!value.every((id) => mongoose.Types.ObjectId.isValid(id))) {
+      throw new Error("Invalid subcategory ID");
+    }
+    return true;
+  });
 
-const brandIdValidation = body("brandId")
-  .notEmpty()
-  .withMessage("Brand ID is required")
+const brandValidation = body("brand")
+  .optional()
   .isMongoId()
   .withMessage("Invalid brand ID");
+
+const ratingsAverageValidation = body("ratingsAverage")
+  .optional({ nullable: true })
+  .isFloat({ min: 0, max: 5 })
+  .withMessage("Rating must be between 0 and 5")
+  .custom((value) => {
+    if (value !== undefined && value !== null && value !== 0 && value < 1) {
+      throw new Error("Rating must be 0 or between 1 and 5");
+    }
+    return true;
+  });
 
 export default {
   createProduct: [
     titleValidation,
     descriptionValidation,
     imageCoverValidation,
-    categoryIdValidation,
-    subcategoryIdValidation,
-    brandIdValidation,
+    categoryValidation,
+    subcategoriesValidation,
+    brandValidation,
     quantityValidation,
     priceValidation,
     colorsValidation,
     priceAfterDiscountValidation,
+    ratingsAverageValidation,
+    soldValidation,
   ],
   updateProduct: [
     idValidation,
     optionalTitleValidation,
     descriptionValidation,
     imageCoverValidation,
-    categoryIdValidation,
-    subcategoryIdValidation,
-    brandIdValidation,
+    categoryValidation,
+    subcategoriesValidation,
+    brandValidation,
     quantityValidation,
     priceValidation,
     colorsValidation,
     priceAfterDiscountValidation,
+    ratingsAverageValidation,
+    soldValidation,
   ],
   getProductById: [idValidation],
   deleteProductById: [idValidation],
