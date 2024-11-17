@@ -5,12 +5,17 @@ import Logger from "#utils/logger.js";
 import asyncHandler from "express-async-handler";
 import slugify from "slugify";
 
+// @desc middleware to set the categoryId to the body if it is not present
+export const setCategoryIdToBody = (req, res, next) => {
+  if (!req.body.category) req.body.category = req.params.categoryId;
+  next();
+};
+
 // @desc Create a new sub category
 // @route POST /api/v1/subcategories
 // @access Private
 export const createSubCategory = asyncHandler(async (req, res, next) => {
   const { name, category } = req.body;
-
   // Check if the sub category name is already taken
   const subCategoryExists = await SubCategory.findOne({ name });
   if (subCategoryExists) {
@@ -40,21 +45,26 @@ export const createSubCategory = asyncHandler(async (req, res, next) => {
     );
 });
 
-// @desc Nested route
+// @desc middleware filter the categoryId from the params if it is present
+// Nested route
 // @route GET /api/v1/categories/:categoryId/subcategories
+export const filterCategoryIdFromParams = (req, res, next) => {
+  // Create filter object based on categoryId presence
+  const filterObject = req.params.categoryId
+    ? { category: req.params.categoryId }
+    : {};
+  req.filterObject = filterObject;
+  next();
+};
 
 // @desc Get all sub categories
 // @route GET /api/v1/subcategories
 // @access Public
 export const getSubCategories = asyncHandler(async (req, res, next) => {
   const { skip, limit, getPagingData } = req.pagination;
-  const { categoryId } = req.params;
 
-  // Create filter object based on categoryId presence
-  const filterObject = categoryId ? { category: categoryId } : {};
-
-  const totalItems = await SubCategory.countDocuments(filterObject);
-  const subCategories = await SubCategory.find(filterObject)
+  const totalItems = await SubCategory.countDocuments(req.filterObject);
+  const subCategories = await SubCategory.find(req.filterObject)
     .skip(skip)
     .limit(limit)
     .sort({ createdAt: -1 })
@@ -177,4 +187,6 @@ export default {
   updateSubCategoryById,
   deleteSubCategoryById,
   getSubCategoryBySlug,
+  filterCategoryIdFromParams,
+  setCategoryIdToBody,
 };

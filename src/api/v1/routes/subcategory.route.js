@@ -9,6 +9,8 @@ import {
   updateSubCategoryById,
   deleteSubCategoryById,
   getSubCategories,
+  setCategoryIdToBody,
+  filterCategoryIdFromParams,
 } from "#controllers/subcategory.controller.js";
 
 // Create router with mergeParams option
@@ -16,8 +18,12 @@ const router = Router({ mergeParams: true });
 
 router
   .route("/")
-  .post(validate(subCategoryValidation.createSubCategory), createSubCategory)
-  .get(paginator(10), getSubCategories);
+  .post(
+    setCategoryIdToBody,
+    validate(subCategoryValidation.createSubCategory),
+    createSubCategory
+  )
+  .get(filterCategoryIdFromParams, paginator(10), getSubCategories);
 
 router.get(
   "/slug/:slug",
