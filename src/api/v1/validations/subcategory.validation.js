@@ -4,7 +4,7 @@ import { body, param } from "express-validator";
 const nameValidation = body("name")
   .trim()
   .notEmpty()
-  .withMessage("Category name is required")
+  .withMessage("Subcategory name is required")
   .isLength({ min: 2 })
   .withMessage("Name must be at least 2 characters long")
   .isLength({ max: 32 })
@@ -14,7 +14,7 @@ const optionalNameValidation = body("name")
   .optional()
   .trim()
   .notEmpty()
-  .withMessage("Category name cannot be empty")
+  .withMessage("Subcategory name cannot be empty")
   .isLength({ min: 2 })
   .withMessage("Name must be at least 2 characters long")
   .isLength({ max: 32 })
@@ -27,9 +27,9 @@ const imageValidation = body("image")
 
 const idValidation = param("id")
   .notEmpty()
-  .withMessage("Category ID is required")
+  .withMessage("Subcategory ID is required")
   .isMongoId()
-  .withMessage("Invalid category ID");
+  .withMessage("Invalid subcategory ID");
 
 const slugValidation = param("slug")
   .trim()
@@ -40,9 +40,9 @@ const slugValidation = param("slug")
 
 const categoryValidation = body("category")
   .notEmpty()
-  .withMessage("Category is required")
+  .withMessage("Subcategory is required")
   .isMongoId()
-  .withMessage("Invalid category ID");
+  .withMessage("Invalid subcategory ID");
 
 export default {
   createSubCategory: [nameValidation, categoryValidation],
