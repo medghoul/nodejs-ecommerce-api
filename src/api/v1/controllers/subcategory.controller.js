@@ -1,16 +1,21 @@
-import slugify from "slugify";
-import asyncHandler from "express-async-handler";
+import SubCategory from "#models/subcategory.model.js";
+import ApiError from "#utils/api.error.js";
 import ApiResponse from "#utils/api.response.js";
 import Logger from "#utils/logger.js";
-import ApiError from "#utils/api.error.js";
-import SubCategory from "#models/sub.category.model.js";
+import asyncHandler from "express-async-handler";
+import slugify from "slugify";
+
+// @desc middleware to set the categoryId to the body if it is not present
+export const setCategoryIdToBody = (req, res, next) => {
+  if (!req.body.category) req.body.category = req.params.categoryId;
+  next();
+};
 
 // @desc Create a new sub category
-// @route POST /api/v1/sub-categories
+// @route POST /api/v1/subcategories
 // @access Private
 export const createSubCategory = asyncHandler(async (req, res, next) => {
   const { name, category } = req.body;
-
   // Check if the sub category name is already taken
   const subCategoryExists = await SubCategory.findOne({ name });
   if (subCategoryExists) {
@@ -40,17 +45,30 @@ export const createSubCategory = asyncHandler(async (req, res, next) => {
     );
 });
 
+// @desc middleware filter the categoryId from the params if it is present
+// Nested route
+// @route GET /api/v1/categories/:categoryId/subcategories
+export const filterCategoryIdFromParams = (req, res, next) => {
+  // Create filter object based on categoryId presence
+  const filterObject = req.params.categoryId
+    ? { category: req.params.categoryId }
+    : {};
+  req.filterObject = filterObject;
+  next();
+};
+
 // @desc Get all sub categories
-// @route GET /api/v1/sub-categories
+// @route GET /api/v1/subcategories
 // @access Public
 export const getSubCategories = asyncHandler(async (req, res, next) => {
   const { skip, limit, getPagingData } = req.pagination;
 
-  const totalItems = await SubCategory.countDocuments();
-  const subCategories = await SubCategory.find({})
+  const totalItems = await SubCategory.countDocuments(req.filterObject);
+  const subCategories = await SubCategory.find(req.filterObject)
     .skip(skip)
     .limit(limit)
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .populate({ path: "category", select: "name" });
 
   const paginatedData = getPagingData(totalItems, subCategories);
 
@@ -68,12 +86,15 @@ export const getSubCategories = asyncHandler(async (req, res, next) => {
 });
 
 // @desc Get a sub category by ID
-// @route GET /api/v1/sub-categories/:id
+// @route GET /api/v1/subcategories/:id
 // @access Public
 export const getSubCategoryById = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
-  const subCategory = await SubCategory.findById(id);
+  const subCategory = await SubCategory.findById(id).populate({
+    path: "category",
+    select: "_id name",
+  });
   if (!subCategory) {
     throw new ApiError(404, "Sub category not found");
   }
@@ -86,7 +107,7 @@ export const getSubCategoryById = asyncHandler(async (req, res, next) => {
 });
 
 // @desc Update a sub category by ID
-// @route PUT /api/v1/sub-categories/:id
+// @route PUT /api/v1/subcategories/:id
 // @access Private
 export const updateSubCategoryById = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
@@ -121,7 +142,7 @@ export const updateSubCategoryById = asyncHandler(async (req, res, next) => {
 });
 
 // @desc Delete a sub category by ID
-// @route DELETE /api/v1/sub-categories/:id
+// @route DELETE /api/v1/subcategories/:id
 // @access Private
 export const deleteSubCategoryById = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
@@ -139,12 +160,15 @@ export const deleteSubCategoryById = asyncHandler(async (req, res, next) => {
 });
 
 // @desc Get a sub category by slug
-// @route GET /api/v1/sub-categories/:slug
+// @route GET /api/v1/subcategories/:slug
 // @access Public
 export const getSubCategoryBySlug = asyncHandler(async (req, res, next) => {
   const { slug } = req.params;
 
-  const subCategory = await SubCategory.findOne({ slug });
+  const subCategory = await SubCategory.findOne({ slug }).populate({
+    path: "category",
+    select: "_id name",
+  });
   if (!subCategory) {
     throw new ApiError(404, "Sub category not found");
   }
@@ -163,4 +187,6 @@ export default {
   updateSubCategoryById,
   deleteSubCategoryById,
   getSubCategoryBySlug,
+  filterCategoryIdFromParams,
+  setCategoryIdToBody,
 };
