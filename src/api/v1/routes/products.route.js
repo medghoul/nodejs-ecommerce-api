@@ -19,7 +19,7 @@ router
   .post(validate(productValidation.createProduct), createProduct);
 
 router.get(
-  "/:slug",
+  "/slug/:slug",
   validate(productValidation.getProductBySlug),
   getProductBySlug
 );

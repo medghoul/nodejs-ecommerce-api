@@ -20,7 +20,7 @@ router
   .post(validate(categoryValidation.createCategory), createCategory);
 
 router.get(
-  "/:slug",
+  "/slug/:slug",
   validate(categoryValidation.getCategoryBySlug),
   getCategoryBySlug
 );

@@ -19,7 +19,11 @@ router
   .get(paginator(10), getBrands)
   .post(validate(brandValidation.createBrand), createBrand);
 
-router.get("/:slug", validate(brandValidation.getBrandBySlug), getBrandBySlug);
+router.get(
+  "/slug/:slug",
+  validate(brandValidation.getBrandBySlug),
+  getBrandBySlug
+);
 
 router
   .route("/:id")

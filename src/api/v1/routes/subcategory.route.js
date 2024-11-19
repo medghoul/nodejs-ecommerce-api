@@ -26,7 +26,7 @@ router
   .get(filterCategoryIdFromParams, paginator(10), getSubCategories);
 
 router.get(
-  "/:slug",
+  "/slug/:slug",
   validate(subCategoryValidation.getSubCategoryBySlug),
   getSubCategoryBySlug
 );

@@ -171,36 +171,28 @@ const ratingsAverageValidation = body("ratingsAverage")
     return true;
   });
 
+const createValidationRule = (validationRule, isUpdate = false) => {
+  return isUpdate ? validationRule.optional() : validationRule;
+};
+
+const createProductValidations = (isUpdate = false) => [
+  createValidationRule(titleValidation, isUpdate),
+  createValidationRule(descriptionValidation, isUpdate),
+  createValidationRule(imageCoverValidation, isUpdate),
+  createValidationRule(categoryValidation, isUpdate),
+  createValidationRule(subcategoriesValidation, isUpdate),
+  createValidationRule(brandValidation, isUpdate),
+  createValidationRule(quantityValidation, isUpdate),
+  createValidationRule(priceValidation, isUpdate),
+  createValidationRule(colorsValidation, isUpdate),
+  createValidationRule(priceAfterDiscountValidation, isUpdate),
+  createValidationRule(ratingsAverageValidation, isUpdate),
+  createValidationRule(soldValidation, isUpdate),
+];
+
 export default {
-  createProduct: [
-    titleValidation,
-    descriptionValidation,
-    imageCoverValidation,
-    categoryValidation,
-    subcategoriesValidation,
-    brandValidation,
-    quantityValidation,
-    priceValidation,
-    colorsValidation,
-    priceAfterDiscountValidation,
-    ratingsAverageValidation,
-    soldValidation,
-  ],
-  updateProduct: [
-    idValidation,
-    optionalTitleValidation,
-    descriptionValidation,
-    imageCoverValidation,
-    categoryValidation,
-    subcategoriesValidation,
-    brandValidation,
-    quantityValidation,
-    priceValidation,
-    colorsValidation,
-    priceAfterDiscountValidation,
-    ratingsAverageValidation,
-    soldValidation,
-  ],
+  createProduct: createProductValidations(false),
+  updateProduct: [idValidation, ...createProductValidations(true)],
   getProductById: [idValidation],
   deleteProductById: [idValidation],
   getProductBySlug: [slugValidation],
