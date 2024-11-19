@@ -1,6 +1,8 @@
 import { body, param } from "express-validator";
 import mongoose from "mongoose";
-
+import Category from "#models/category.model.js";
+import Brand from "#models/brand.model.js";
+import Subcategory from "#models/subcategory.model.js";
 // Common validation rules
 const titleValidation = body("title")
   .trim()
@@ -105,23 +107,58 @@ const categoryValidation = body("category")
   .notEmpty()
   .withMessage("Category is required")
   .isMongoId()
-  .withMessage("Invalid category ID");
+  .withMessage("Invalid category ID")
+  .custom(async (categoryId) => {
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      throw new Error(`Category with ID ${categoryId} not exists`);
+    }
+    return true;
+  });
 
 const subcategoriesValidation = body("subcategories")
   .optional()
   .isArray()
   .withMessage("Subcategories must be an array")
-  .custom((value) => {
-    if (!value.every((id) => mongoose.Types.ObjectId.isValid(id))) {
-      throw new Error("Invalid subcategory ID");
+  .custom(async (subcategoriesIds) => {
+    // Verify if all IDs are valid MongoDB ObjectIds
+    const isValidIds = subcategoriesIds.every((id) =>
+      mongoose.Types.ObjectId.isValid(id)
+    );
+    if (!isValidIds) {
+      throw new Error("Invalid subcategory ID format");
     }
+
+    const subcategories = await Subcategory.find({
+      _id: { $in: subcategoriesIds },
+    });
+
+    // Verify if all IDs are valid MongoDB ObjectIds
+    const foundIds = subcategories.map((sub) => sub._id.toString());
+    const notFoundIds = subcategoriesIds.filter(
+      (id) => !foundIds.includes(id.toString())
+    );
+
+    if (notFoundIds.length > 0) {
+      throw new Error(
+        `Subcategories with IDs ${notFoundIds.join(", ")} do not exist`
+      );
+    }
+
     return true;
   });
 
 const brandValidation = body("brand")
   .optional()
   .isMongoId()
-  .withMessage("Invalid brand ID");
+  .withMessage("Invalid brand ID")
+  .custom(async (brandId) => {
+    const brand = await Brand.findById(brandId);
+    if (!brand) {
+      throw new Error(`Brand with ID ${brandId} not exists`);
+    }
+    return true;
+  });
 
 const ratingsAverageValidation = body("ratingsAverage")
   .optional({ nullable: true })

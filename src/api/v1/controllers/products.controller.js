@@ -15,7 +15,10 @@ export const getProducts = asyncHandler(async (req, res, next) => {
   const products = await Product.find()
     .skip(skip)
     .limit(limit)
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .populate("category", "name -_id ")
+    .populate("subcategories", "name -_id")
+    .populate("brand", "name -_id");
 
   const paginatedData = getPagingData(totalItems, products);
 
@@ -33,6 +36,7 @@ export const getProducts = asyncHandler(async (req, res, next) => {
 // @access Private
 export const createProduct = asyncHandler(async (req, res, next) => {
   const { title } = req.body;
+
 
   const slug = slugify(title, {
     lower: true,
@@ -58,12 +62,26 @@ export const createProduct = asyncHandler(async (req, res, next) => {
 // @route PUT /api/v1/products/:id
 // @access Private
 export const updateProduct = asyncHandler(async (req, res, next) => {
+  // Create update object with only the fields that are present in req.body
+  const updateFields = {};
+  
+  // Iterate through request body and add only present fields
+  Object.keys(req.body).forEach(key => {
+    updateFields[key] = req.body[key];
+  });
+
+  // If title is being updated, update the slug as well
+  if (req.body.title) {
+    updateFields.slug = slugify(req.body.title, {
+      lower: true,
+      strict: true,
+      trim: true,
+    });
+  }
+
   const product = await Product.findByIdAndUpdate(
     req.params.id,
-    {
-      ...req.body,
-      slug: slugify(req.body.title, { lower: true, strict: true, trim: true }),
-    },
+    updateFields,
     { new: true, runValidators: true }
   );
 
@@ -113,7 +131,10 @@ export const getProductBySlug = asyncHandler(async (req, res, next) => {
 // @route GET /api/v1/products/:id
 // @access Public
 export const getProductById = asyncHandler(async (req, res, next) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.id)
+    .populate("category", "name -_id")
+    .populate("subcategories", "name -_id")
+    .populate("brand", "name -_id");
 
   if (!product) {
     return next(new ApiError(404, "Product not found"));
