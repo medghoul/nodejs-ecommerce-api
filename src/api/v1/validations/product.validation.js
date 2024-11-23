@@ -72,20 +72,22 @@ const fieldValidations = {
     .withMessage("Subcategories must be an array")
     .custom(async (subcategoriesIds, { req }) => {
       // First validate that all IDs are valid MongoDB ObjectIDs
-      if (!subcategoriesIds.every((id) => mongoose.Types.ObjectId.isValid(id))) {
+      if (
+        !subcategoriesIds.every((id) => mongoose.Types.ObjectId.isValid(id))
+      ) {
         throw new Error("Invalid subcategory ID format");
       }
 
       // Find all subcategories
-      const subcategories = await Subcategory.find({ 
+      const subcategories = await Subcategory.find({
         _id: { $in: subcategoriesIds },
-        category: req.body.category // Only find subcategories that belong to the specified category
+        category: req.body.category, // Only find subcategories that belong to the specified category
       });
 
       // Check if all subcategories were found
-      const foundIds = subcategories.map(sub => sub._id.toString());
+      const foundIds = subcategories.map((sub) => sub._id.toString());
       const notFoundIds = subcategoriesIds.filter(
-        id => !foundIds.includes(id.toString())
+        (id) => !foundIds.includes(id.toString())
       );
 
       if (notFoundIds.length > 0) {
@@ -122,7 +124,9 @@ const fieldValidations = {
     .withMessage("Price after discount must be a non-negative number")
     .custom((value, { req }) => {
       if (value >= req.body.price) {
-        throw new Error("Price after discount must be less than original price");
+        throw new Error(
+          "Price after discount must be less than original price"
+        );
       }
       return true;
     }),

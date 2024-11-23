@@ -1,5 +1,5 @@
-import winston from 'winston';
-import colors from 'colors';
+import winston from "winston";
+import colors from "colors";
 
 const levels = {
   error: 0,
@@ -16,32 +16,34 @@ const level = () => {
 
 // Configure colors theme
 colors.setTheme({
-    error: 'red',
-    warn: 'yellow',
-    info: 'blue',
-    http: 'magenta',
-    debug: 'white'
+  error: "red",
+  warn: "yellow",
+  info: "blue",
+  http: "magenta",
+  debug: "white",
 });
 
 const emojis = {
-    error: '❌',
-    warn: '⚠️',
-    info: '💡',
-    http: '🌐',
-    debug: '🐛',
+  error: "❌",
+  warn: "⚠️",
+  info: "💡",
+  http: "🌐",
+  debug: "🐛",
 };
 
 // Custom format for the logger
 const customFormat = winston.format.printf(({ level, message, timestamp }) => {
-    const emoji = emojis[level.toLowerCase()];
-    const colorizedLevel = colors[level.toLowerCase()](`[${level.toUpperCase()}]`);
-    const colorizedMessage = colors[level.toLowerCase()](message);
-    
-    if (typeof message === 'object') {
-        return `${timestamp} ${emoji} ${colorizedLevel}: ${JSON.stringify(message, null, 2)}`;
-    }
-    
-    return `${timestamp} ${emoji} ${colorizedLevel}: ${colorizedMessage}`;
+  const emoji = emojis[level.toLowerCase()];
+  const colorizedLevel = colors[level.toLowerCase()](
+    `[${level.toUpperCase()}]`
+  );
+  const colorizedMessage = colors[level.toLowerCase()](message);
+
+  if (typeof message === "object") {
+    return `${timestamp} ${emoji} ${colorizedLevel}: ${JSON.stringify(message, null, 2)}`;
+  }
+
+  return `${timestamp} ${emoji} ${colorizedLevel}: ${colorizedMessage}`;
 });
 
 const format = winston.format.combine(
