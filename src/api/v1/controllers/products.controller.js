@@ -9,17 +9,55 @@ import ApiError from "#utils/api.error.js";
 // @route GET /api/v1/products
 // @access Public
 export const getProducts = asyncHandler(async (req, res, next) => {
-  const { skip, limit, getPagingData } = req.pagination;
+  // @desc Get query string object
+  let queryStringObject = { ...req.query };
+  const excludeFields = ["skip", "limit", "page", "sort", "filter", "fields"];
 
-  const totalItems = await Product.countDocuments();
-  const products = await Product.find()
+  // @desc Delete exclude fields from query string object
+  excludeFields.forEach((field) => delete queryStringObject[field]);
+
+  // @desc Replace gte, gt, lte, lt with $gte, $gt, $lte, $lt in query string object
+  let queryString = JSON.stringify(queryStringObject);
+  queryString = queryString.replace(
+    /\b(gte|gt|lte|lt)\b/g,
+    (match) => `$${match}`
+  );
+
+  // @desc Parse query string to object
+  queryStringObject = JSON.parse(queryString);
+
+  // @desc Build query
+  let query = Product.find(queryStringObject);
+
+  // @desc Sorting
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    query = query.sort(sortBy);
+  } else {
+    query = query.sort("-createdAt");
+  }
+
+  // @desc Field Limiting
+  if (req.query.fields) {
+    const fields = req.query.fields.split(",").join(" ");
+    query = query.select(fields);
+  } else {
+    query = query.select("-__v");
+  }
+
+  // @desc Get pagination data
+  const { skip, limit, getPagingData } = req.pagination;
+  const totalItems = await Product.countDocuments(queryStringObject);
+
+  // @desc Execute query with pagination and population
+  const products = await query
     .skip(skip)
     .limit(limit)
-    .sort({ createdAt: -1 })
-    .populate("category", "name -_id ")
+    .populate("category", "name -_id")
     .populate("subcategories", "name -_id")
     .populate("brand", "name -_id");
 
+  // @desc Get paginated data
   const paginatedData = getPagingData(totalItems, products);
 
   Logger.info("Products retrieved successfully");
@@ -36,7 +74,6 @@ export const getProducts = asyncHandler(async (req, res, next) => {
 // @access Private
 export const createProduct = asyncHandler(async (req, res, next) => {
   const { title } = req.body;
-
 
   const slug = slugify(title, {
     lower: true,
@@ -64,9 +101,9 @@ export const createProduct = asyncHandler(async (req, res, next) => {
 export const updateProduct = asyncHandler(async (req, res, next) => {
   // Create update object with only the fields that are present in req.body
   const updateFields = {};
-  
+
   // Iterate through request body and add only present fields
-  Object.keys(req.body).forEach(key => {
+  Object.keys(req.body).forEach((key) => {
     updateFields[key] = req.body[key];
   });
 
@@ -79,11 +116,10 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
     });
   }
 
-  const product = await Product.findByIdAndUpdate(
-    req.params.id,
-    updateFields,
-    { new: true, runValidators: true }
-  );
+  const product = await Product.findByIdAndUpdate(req.params.id, updateFields, {
+    new: true,
+    runValidators: true,
+  });
 
   if (!product) {
     return next(new ApiError(404, "Product not found"));
