@@ -70,19 +70,30 @@ const fieldValidations = {
     .optional()
     .isArray()
     .withMessage("Subcategories must be an array")
-    .custom(async (subcategoriesIds) => {
+    .custom(async (subcategoriesIds, { req }) => {
+      // First validate that all IDs are valid MongoDB ObjectIDs
       if (!subcategoriesIds.every((id) => mongoose.Types.ObjectId.isValid(id))) {
         throw new Error("Invalid subcategory ID format");
       }
 
-      const subcategories = await Subcategory.find({ _id: { $in: subcategoriesIds } });
+      // Find all subcategories
+      const subcategories = await Subcategory.find({ 
+        _id: { $in: subcategoriesIds },
+        category: req.body.category // Only find subcategories that belong to the specified category
+      });
+
+      // Check if all subcategories were found
+      const foundIds = subcategories.map(sub => sub._id.toString());
       const notFoundIds = subcategoriesIds.filter(
-        (id) => !subcategories.map(sub => sub._id.toString()).includes(id.toString())
+        id => !foundIds.includes(id.toString())
       );
 
       if (notFoundIds.length > 0) {
-        throw new Error(`Subcategories with IDs ${notFoundIds.join(", ")} do not exist`);
+        throw new Error(
+          `Subcategories with IDs ${notFoundIds.join(", ")} either do not exist or do not belong to the specified category`
+        );
       }
+
       return true;
     }),
 
