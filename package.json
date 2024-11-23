@@ -6,7 +6,7 @@
   "exports": "./app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
+    "start": "nodemon app.js",
     "dev": "nodemon app.js"
   },
   "keywords": [],
@@ -14,10 +14,12 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "colors": "^1.4.0",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.8.0",
+    "mongodb": "^6.11.0",
+    "mongoose": "^8.8.2",
     "morgan": "^1.10.0",
     "winston": "^3.16.0"
   },
