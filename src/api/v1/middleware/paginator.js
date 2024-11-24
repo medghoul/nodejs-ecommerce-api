@@ -1,7 +1,19 @@
 import ApiResponse from "#utils/api.response.js";
 
+/**
+ * Creates a pagination middleware
+ * @param {number} defaultItemsPerPage - Default number of items per page
+ * @returns {Function} Express middleware function
+ */
 const paginator =
   (defaultItemsPerPage = 10) =>
+  /**
+   * Express middleware that adds pagination utilities to the request object
+   * @param {import('express').Request} req - Express request object
+   * @param {import('express').Response} res - Express response object
+   * @param {import('express').NextFunction} next - Express next function
+   * @returns {void}
+   */
   (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || defaultItemsPerPage;
@@ -16,10 +28,28 @@ const paginator =
 
     const skip = (page - 1) * limit;
 
+    /**
+     * @typedef {Object} PaginationInfo
+     * @property {number} page - Current page number
+     * @property {number} limit - Items per page
+     * @property {number} skip - Number of items to skip
+     * @property {Function} getPagingData - Function to generate pagination metadata
+     */
+
+    /**
+     * Pagination utility object added to request
+     * @type {PaginationInfo}
+     */
     req.pagination = {
       page,
       limit,
       skip,
+      /**
+       * Generates pagination metadata
+       * @param {number} totalItems - Total number of items across all pages
+       * @param {Array} items - Current page items
+       * @returns {Object} Pagination metadata with items
+       */
       getPagingData: (totalItems, items) => ({
         totalItems,
         items,
