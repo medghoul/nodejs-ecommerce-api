@@ -4,31 +4,21 @@ import Category from "#models/category.model.js";
 import Logger from "#utils/logger.js";
 import ApiResponse from "#utils/api.response.js";
 import ApiError from "#utils/api.error.js";
-
+import ApiFeatures from "#utils/api.features.js";
 // @desc Get all categories
 // @route GET /api/v1/categories
 // @access Public
 export const getCategories = asyncHandler(async (req, res, next) => {
-  const { skip, limit, getPagingData } = req.pagination;
-
-  const totalItems = await Category.countDocuments();
-  const categories = await Category.find()
-    .skip(skip)
-    .limit(limit)
-    .sort({ createdAt: -1 });
-
-  const paginatedData = getPagingData(totalItems, categories);
-
-  Logger.info("Categories retrieved successfully");
-
+  const apiFeatures = new ApiFeatures(
+    Category.find(),
+    req.query,
+    req.pagination
+  );
+  const categories = await apiFeatures.execute();
   res
     .status(200)
     .json(
-      ApiResponse.success(
-        200,
-        "Categories retrieved successfully",
-        paginatedData
-      )
+      ApiResponse.success(200, "Categories fetched successfully", categories)
     );
 });
 

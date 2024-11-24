@@ -4,32 +4,17 @@ import Brand from "#models/brand.model.js";
 import Logger from "#utils/logger.js";
 import ApiResponse from "#utils/api.response.js";
 import ApiError from "#utils/api.error.js";
+import ApiFeatures from "#utils/api.features.js";
 
 // @desc Get all brands
 // @route GET /api/v1/brands
 // @access Public
 export const getBrands = asyncHandler(async (req, res, next) => {
-  const { skip, limit, getPagingData } = req.pagination;
-
-  const totalItems = await Brand.countDocuments();
-  const brands = await Brand.find()
-    .skip(skip)
-    .limit(limit)
-    .sort({ createdAt: -1 });
-
-  const paginatedData = getPagingData(totalItems, brands);
-
-  Logger.info("Brands retrieved successfully");
-
+  const apiFeatures = new ApiFeatures(Brand.find(), req.query, req.pagination);
+  const brands = await apiFeatures.execute();
   res
     .status(200)
-    .json(
-      ApiResponse.success(
-        200,
-        "Categories retrieved successfully",
-        paginatedData
-      )
-    );
+    .json(ApiResponse.success(200, "Brands fetched successfully", brands));
 });
 
 // @desc Create a new brand
