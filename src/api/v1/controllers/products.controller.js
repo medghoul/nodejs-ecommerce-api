@@ -4,85 +4,25 @@ import Product from "#models/product.model.js";
 import Logger from "#utils/logger.js";
 import ApiResponse from "#utils/api.response.js";
 import ApiError from "#utils/api.error.js";
+import ApiFeatures from "#utils/api.features.js";
 
 // @desc Get all products
 // @route GET /api/v1/products
 // @access Public
 export const getProducts = asyncHandler(async (req, res, next) => {
-  // @desc Get query string object
-  let queryStringObject = { ...req.query };
-  const excludeFields = ["skip", "limit", "page", "sort", "filter", "fields", "keyword"];
+  const apiFeatures = new ApiFeatures(Product.find(), req.query, req.pagination)
+    .filter()
+    .sort()
+    .limitFields()
+    .search()
+    .pagination();
 
-  // @desc Delete exclude fields from query string object
-  excludeFields.forEach((field) => delete queryStringObject[field]);
-
-  // @desc Replace gte, gt, lte, lt with $gte, $gt, $lte, $lt in query string object
-  let queryString = JSON.stringify(queryStringObject);
-  queryString = queryString.replace(
-    /\b(gte|gt|lte|lt)\b/g,
-    (match) => `$${match}`
-  );
-
-  // @desc Parse query string to object
-  queryStringObject = JSON.parse(queryString);
-
-  // @desc Build filter conditions
-  let filterConditions = { ...queryStringObject };
-  
-  // @desc Add search conditions if keyword exists
-  if (req.query.keyword) {
-    filterConditions = {
-      ...filterConditions,
-      $or: [
-        { title: { $regex: req.query.keyword, $options: "i" } },
-        { description: { $regex: req.query.keyword, $options: "i" } },
-      ],
-    };
-  }
-
-  // @desc Get total count with all filters applied
-  const totalItems = await Product.countDocuments(filterConditions);
-
-  // @desc Build query with same conditions
-  let query = Product.find(filterConditions);
-
-  // @desc Sorting
-  if (req.query.sort) {
-    const sortBy = req.query.sort.split(",").join(" ");
-    query = query.sort(sortBy);
-  } else {
-    query = query.sort("-createdAt");
-  }
-
-  // @desc Field Limiting
-  if (req.query.fields) {
-    const fields = req.query.fields.split(",").join(" ");
-    query = query.select(fields);
-  } else {
-    query = query.select("-__v");
-  }
-
-  // @desc Get pagination data
-  const { skip, limit, getPagingData } = req.pagination;
-
-  // @desc Execute query with pagination and population
-  const products = await query
-    .skip(skip)
-    .limit(limit)
-    .populate("category", "name -_id")
-    .populate("subcategories", "name -_id")
-    .populate("brand", "name -_id");
-
-  // @desc Get paginated data
-  const paginatedData = getPagingData(totalItems, products);
+  const result = await apiFeatures.execute();
 
   Logger.info("Products retrieved successfully");
-
   res
     .status(200)
-    .json(
-      ApiResponse.success(200, "Products retrieved successfully", paginatedData)
-    );
+    .json(ApiResponse.success(200, "Products retrieved successfully", result));
 });
 
 // @desc Create a new product
