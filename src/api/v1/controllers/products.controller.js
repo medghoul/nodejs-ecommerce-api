@@ -11,7 +11,7 @@ import ApiError from "#utils/api.error.js";
 export const getProducts = asyncHandler(async (req, res, next) => {
   // @desc Get query string object
   let queryStringObject = { ...req.query };
-  const excludeFields = ["skip", "limit", "page", "sort", "filter", "fields"];
+  const excludeFields = ["skip", "limit", "page", "sort", "filter", "fields", "keyword"];
 
   // @desc Delete exclude fields from query string object
   excludeFields.forEach((field) => delete queryStringObject[field]);
@@ -26,8 +26,25 @@ export const getProducts = asyncHandler(async (req, res, next) => {
   // @desc Parse query string to object
   queryStringObject = JSON.parse(queryString);
 
-  // @desc Build query
-  let query = Product.find(queryStringObject);
+  // @desc Build filter conditions
+  let filterConditions = { ...queryStringObject };
+  
+  // @desc Add search conditions if keyword exists
+  if (req.query.keyword) {
+    filterConditions = {
+      ...filterConditions,
+      $or: [
+        { title: { $regex: req.query.keyword, $options: "i" } },
+        { description: { $regex: req.query.keyword, $options: "i" } },
+      ],
+    };
+  }
+
+  // @desc Get total count with all filters applied
+  const totalItems = await Product.countDocuments(filterConditions);
+
+  // @desc Build query with same conditions
+  let query = Product.find(filterConditions);
 
   // @desc Sorting
   if (req.query.sort) {
@@ -47,7 +64,6 @@ export const getProducts = asyncHandler(async (req, res, next) => {
 
   // @desc Get pagination data
   const { skip, limit, getPagingData } = req.pagination;
-  const totalItems = await Product.countDocuments(queryStringObject);
 
   // @desc Execute query with pagination and population
   const products = await query
