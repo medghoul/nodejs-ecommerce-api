@@ -27,7 +27,7 @@ class ApiFeatures {
       this.filter();
 
       // Then apply keyword search
-      this.search();
+      this.search(this.query.model.modelName);
 
       // Save queryObj for total count
       const countQuery = { ...this.queryObj };
@@ -80,14 +80,31 @@ class ApiFeatures {
    * Applies search functionality using keyword
    * @private
    */
-  search() {
+  search(model) {
     if (this.queryString.keyword) {
-      const keywordFilter = {
-        $or: [
-          { title: { $regex: this.queryString.keyword, $options: "i" } },
-          { description: { $regex: this.queryString.keyword, $options: "i" } },
-        ],
-      };
+      let keywordFilter = {};
+      if (model === "Product") {
+        keywordFilter = {
+          $or: [
+            { title: { $regex: this.queryString.keyword, $options: "i" } },
+            {
+              description: { $regex: this.queryString.keyword, $options: "i" },
+            },
+          ],
+        };
+      } else if (model === "Category") {
+        keywordFilter = {
+          name: { $regex: this.queryString.keyword, $options: "i" },
+        };
+      } else if (model === "Brand") {
+        keywordFilter = {
+          name: { $regex: this.queryString.keyword, $options: "i" },
+        };
+      } else if (model === "SubCategory") {
+        keywordFilter = {
+          name: { $regex: this.queryString.keyword, $options: "i" },
+        };
+      }
 
       // Combine existing filters with search filter using $and
       this.queryObj = {
