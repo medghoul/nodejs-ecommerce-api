@@ -13,7 +13,13 @@ export const getCategories = asyncHandler(async (req, res, next) => {
     Category.find(),
     req.query,
     req.pagination
-  );
+  )
+    .filter()
+    .sort()
+    .limitFields()
+    .search()
+    .pagination();
+
   const categories = await apiFeatures.execute();
   res
     .status(200)

@@ -65,7 +65,13 @@ export const getSubCategories = asyncHandler(async (req, res, next) => {
     SubCategory.find(),
     req.query,
     req.pagination
-  );
+  )
+    .filter()
+    .sort()
+    .limitFields()
+    .search()
+    .pagination();
+
   const subCategories = await apiFeatures.execute();
   res
     .status(200)

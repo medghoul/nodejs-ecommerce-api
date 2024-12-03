@@ -10,7 +10,17 @@ import ApiFeatures from "#utils/api.features.js";
 // @route GET /api/v1/brands
 // @access Public
 export const getBrands = asyncHandler(async (req, res, next) => {
-  const apiFeatures = new ApiFeatures(Brand.find(), req.query, req.pagination);
+  const apiFeatures = new ApiFeatures(
+    Brand.find(),
+    req.query,
+    req.pagination
+  )
+    .filter()
+    .sort()
+    .limitFields()
+    .search()
+    .pagination();
+
   const brands = await apiFeatures.execute();
   res
     .status(200)
