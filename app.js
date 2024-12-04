@@ -1,6 +1,6 @@
 import config from "#config/config.js";
 import connectDB from "#config/database.js";
-import globalErrorHandler from "#middleware/error.middleware.js";
+import globalErrorHandler from "#middlewares/error.middleware.js";
 import categoryRoutes from "#routes/categories.route.js";
 import subCategoryRoutes from "#routes/subcategory.route.js";
 import brandRoutes from "#routes/brands.route.js";

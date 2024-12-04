@@ -78,6 +78,10 @@ export const createOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     const doc = await Model.create(req.body);
 
+    if (!doc) {
+      return next(new ApiError(400, `${Model.modelName} not created`));
+    }
+
     Logger.info(`New ${Model.modelName} created: ${doc._id}`);
     res
       .status(201)

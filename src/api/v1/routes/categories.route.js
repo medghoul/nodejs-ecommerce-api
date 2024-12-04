@@ -6,8 +6,8 @@ import {
   getCategoryBySlug,
   updateCategory,
 } from "#controllers/categories.controller.js";
-import paginator from "#middleware/paginator.js";
-import { validate } from "#middleware/validate.js";
+import paginator from "#middlewares/paginator.js";
+import { validate } from "#middlewares/validate.js";
 import categoryValidation from "#validations/category.validation.js";
 import { Router } from "express";
 import subcategoriesRoute from "#routes/subcategory.route.js";

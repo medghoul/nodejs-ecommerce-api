@@ -7,7 +7,7 @@
     "#config/*": "./config/*",
     "#utils/*": "./utils/*",
     "#services/*": "./services/*",
-    "#middleware/*": "./src/api/v1/middleware/*",
+    "#middlewares/*": "./src/api/v1/middlewares/*",
     "#controllers/*": "./src/api/v1/controllers/*",
     "#models/*": "./src/api/v1/models/*",
     "#routes/*": "./src/api/v1/routes/*",

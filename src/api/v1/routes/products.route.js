@@ -1,15 +1,15 @@
 import {
   createProduct,
   deleteProduct,
-  getProducts,
   getProductById,
   getProductBySlug,
+  getProducts,
   updateProduct,
 } from "#controllers/products.controller.js";
-import paginator from "#middleware/paginator.js";
-import { validate } from "#middleware/validate.js";
 import productValidation from "#validations/product.validation.js";
 import { Router } from "express";
+import paginator from "../middlewares/paginator.js";
+import { validate } from "../middlewares/validate.js";
 
 const router = Router();
 

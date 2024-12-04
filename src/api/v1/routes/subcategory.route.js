@@ -1,17 +1,17 @@
-import { Router } from "express";
-import { validate } from "#middleware/validate.js";
-import subCategoryValidation from "#validations/subcategory.validation.js";
-import paginator from "#middleware/paginator.js";
 import {
   createSubCategory,
-  getSubCategoryBySlug,
-  getSubCategoryById,
-  updateSubCategoryById,
   deleteSubCategoryById,
-  getSubCategories,
-  setCategoryIdToBody,
   filterCategoryIdFromParams,
+  getSubCategories,
+  getSubCategoryById,
+  getSubCategoryBySlug,
+  setCategoryIdToBody,
+  updateSubCategoryById,
 } from "#controllers/subcategory.controller.js";
+import subCategoryValidation from "#validations/subcategory.validation.js";
+import { Router } from "express";
+import paginator from "../middlewares/paginator.js";
+import { validate } from "../middlewares/validate.js";
 
 // Create router with mergeParams option
 const router = Router({ mergeParams: true });
