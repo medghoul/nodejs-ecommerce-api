@@ -4,28 +4,25 @@ import Product from "#models/product.model.js";
 import Logger from "#utils/logger.js";
 import ApiResponse from "#utils/api.response.js";
 import ApiError from "#utils/api.error.js";
+import ApiFeatures from "#utils/api.features.js";
 
 // @desc Get all products
 // @route GET /api/v1/products
 // @access Public
 export const getProducts = asyncHandler(async (req, res, next) => {
-  const { skip, limit, getPagingData } = req.pagination;
+  const apiFeatures = new ApiFeatures(Product.find(), req.query, req.pagination)
+    .filter()
+    .sort()
+    .limitFields()
+    .search()
+    .pagination();
 
-  const totalItems = await Product.countDocuments();
-  const products = await Product.find()
-    .skip(skip)
-    .limit(limit)
-    .sort({ createdAt: -1 });
-
-  const paginatedData = getPagingData(totalItems, products);
+  const result = await apiFeatures.execute();
 
   Logger.info("Products retrieved successfully");
-
   res
     .status(200)
-    .json(
-      ApiResponse.success(200, "Products retrieved successfully", paginatedData)
-    );
+    .json(ApiResponse.success(200, "Products retrieved successfully", result));
 });
 
 // @desc Create a new product
@@ -58,14 +55,27 @@ export const createProduct = asyncHandler(async (req, res, next) => {
 // @route PUT /api/v1/products/:id
 // @access Private
 export const updateProduct = asyncHandler(async (req, res, next) => {
-  const product = await Product.findByIdAndUpdate(
-    req.params.id,
-    {
-      ...req.body,
-      slug: slugify(req.body.title, { lower: true, strict: true, trim: true }),
-    },
-    { new: true, runValidators: true }
-  );
+  // Create update object with only the fields that are present in req.body
+  const updateFields = {};
+
+  // Iterate through request body and add only present fields
+  Object.keys(req.body).forEach((key) => {
+    updateFields[key] = req.body[key];
+  });
+
+  // If title is being updated, update the slug as well
+  if (req.body.title) {
+    updateFields.slug = slugify(req.body.title, {
+      lower: true,
+      strict: true,
+      trim: true,
+    });
+  }
+
+  const product = await Product.findByIdAndUpdate(req.params.id, updateFields, {
+    new: true,
+    runValidators: true,
+  });
 
   if (!product) {
     return next(new ApiError(404, "Product not found"));
@@ -113,7 +123,10 @@ export const getProductBySlug = asyncHandler(async (req, res, next) => {
 // @route GET /api/v1/products/:id
 // @access Public
 export const getProductById = asyncHandler(async (req, res, next) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.id)
+    .populate("category", "name -_id")
+    .populate("subcategories", "name -_id")
+    .populate("brand", "name -_id");
 
   if (!product) {
     return next(new ApiError(404, "Product not found"));

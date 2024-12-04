@@ -1,9 +1,10 @@
 import config from "#config/config.js";
 import connectDB from "#config/database.js";
-import globalErrorHandler from "#middleware/error.middleware.js";
+import globalErrorHandler from "#middlewares/error.middleware.js";
 import categoryRoutes from "#routes/categories.route.js";
 import subCategoryRoutes from "#routes/subcategory.route.js";
 import brandRoutes from "#routes/brands.route.js";
+import productRoutes from "#routes/products.route.js";
 import ApiError from "#utils/api.error.js";
 import Logger from "#utils/logger.js";
 import express from "express";
@@ -27,7 +28,7 @@ connectDB();
 app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/subcategories", subCategoryRoutes);
 app.use("/api/v1/brands", brandRoutes);
-
+app.use("/api/v1/products", productRoutes);
 // Not found middleware
 app.all("*", (req, res, next) => {
   Logger.error(`Route not found: ${req.originalUrl}`);

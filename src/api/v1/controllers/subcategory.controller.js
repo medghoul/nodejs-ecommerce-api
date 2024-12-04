@@ -4,7 +4,7 @@ import ApiResponse from "#utils/api.response.js";
 import Logger from "#utils/logger.js";
 import asyncHandler from "express-async-handler";
 import slugify from "slugify";
-
+import ApiFeatures from "#utils/api.features.js";
 // @desc middleware to set the categoryId to the body if it is not present
 export const setCategoryIdToBody = (req, res, next) => {
   if (!req.body.category) req.body.category = req.params.categoryId;
@@ -61,26 +61,25 @@ export const filterCategoryIdFromParams = (req, res, next) => {
 // @route GET /api/v1/subcategories
 // @access Public
 export const getSubCategories = asyncHandler(async (req, res, next) => {
-  const { skip, limit, getPagingData } = req.pagination;
+  const apiFeatures = new ApiFeatures(
+    SubCategory.find(),
+    req.query,
+    req.pagination
+  )
+    .filter()
+    .sort()
+    .limitFields()
+    .search()
+    .pagination();
 
-  const totalItems = await SubCategory.countDocuments(req.filterObject);
-  const subCategories = await SubCategory.find(req.filterObject)
-    .skip(skip)
-    .limit(limit)
-    .sort({ createdAt: -1 })
-    .populate({ path: "category", select: "name" });
-
-  const paginatedData = getPagingData(totalItems, subCategories);
-
-  Logger.info("Sub categories retrieved successfully");
-
+  const subCategories = await apiFeatures.execute();
   res
     .status(200)
     .json(
       ApiResponse.success(
         200,
         "Sub categories fetched successfully",
-        paginatedData
+        subCategories
       )
     );
 });
