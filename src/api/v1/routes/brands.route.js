@@ -33,7 +33,11 @@ router.get(
 router
   .route("/:id")
   .get(validate(brandValidation.getBrandById), getBrandById)
-  .put(validate(brandValidation.updateBrand), updateBrand)
+  .put(
+    validate(brandValidation.updateBrand),
+    generateSlug("name"),
+    updateBrand
+  )
   .delete(validate(brandValidation.deleteBrandById), deleteBrand);
 
 router.use("/:brandId/subcategories", subcategoriesRoute);
