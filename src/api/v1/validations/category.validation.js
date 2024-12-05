@@ -1,47 +1,69 @@
 import { body, param } from "express-validator";
 
-// Common validation rules
-const nameValidation = body("name")
-  .trim()
-  .notEmpty()
-  .withMessage("Category name is required")
-  .isLength({ min: 3 })
-  .withMessage("Name must be at least 3 characters long")
-  .isLength({ max: 32 })
-  .withMessage("Name cannot be longer than 32 characters");
+// Parameter validations for URL parameters
+const paramValidations = {
+  id: param("id")
+    .notEmpty()
+    .withMessage("Category ID is required")
+    .isMongoId()
+    .withMessage("Invalid category ID format"),
 
-const optionalNameValidation = body("name")
-  .optional()
-  .trim()
-  .notEmpty()
-  .withMessage("Category name cannot be empty")
-  .isLength({ min: 3 })
-  .withMessage("Name must be at least 3 characters long")
-  .isLength({ max: 32 })
-  .withMessage("Name cannot be longer than 32 characters");
+  slug: param("slug")
+    .trim()
+    .notEmpty()
+    .withMessage("Slug is required")
+    .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+    .withMessage("Invalid slug format")
+    .isLength({ max: 100 })
+    .withMessage("Slug cannot be longer than 100 characters"),
+};
 
-const imageValidation = body("image")
-  .optional()
-  .isURL()
-  .withMessage("Image must be a valid URL");
+// Field validations for request body
+const fieldValidations = {
+  name: body("name")
+    .trim()
+    .notEmpty()
+    .withMessage("Category name is required")
+    .isLength({ min: 3 })
+    .withMessage("Name must be at least 3 characters long")
+    .isLength({ max: 32 })
+    .withMessage("Name cannot be longer than 32 characters")
+    .matches(/^[a-zA-Z0-9\s-]+$/)
+    .withMessage("Name can only contain letters, numbers, spaces and hyphens"),
 
-const idValidation = param("id")
-  .notEmpty()
-  .withMessage("Category ID is required")
-  .isMongoId()
-  .withMessage("Invalid category ID");
+  image: body("image")
+    .optional()
+    .trim()
+    .isURL()
+    .withMessage("Image must be a valid URL")
+    .matches(/\.(jpg|jpeg|png|gif|webp)$/i)
+    .withMessage("Image URL must end with a valid image extension"),
+};
 
-const slugValidation = param("slug")
-  .trim()
-  .notEmpty()
-  .withMessage("Slug is required")
-  .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
-  .withMessage("Invalid slug format");
+/**
+ * Helper function to make fields optional for updates
+ * @param {Object} validations - Object containing validation chains
+ * @returns {Object} New object with all validations made optional
+ */
+const makeOptional = (validations) => {
+  const optionalValidations = {};
+  for (const [field, validation] of Object.entries(validations)) {
+    optionalValidations[field] = validation.optional();
+  }
+  return optionalValidations;
+};
 
+// Create validation chains for different operations
+const validationChains = {
+  create: Object.values(fieldValidations),
+  update: Object.values(makeOptional(fieldValidations)),
+};
+
+// Export validation chains for different routes
 export default {
-  createCategory: [nameValidation, imageValidation],
-  updateCategory: [idValidation, optionalNameValidation, imageValidation],
-  getCategoryById: [idValidation],
-  deleteCategoryById: [idValidation],
-  getCategoryBySlug: [slugValidation],
+  createCategory: validationChains.create,
+  updateCategory: [paramValidations.id, ...validationChains.update],
+  getCategoryById: [paramValidations.id],
+  deleteCategoryById: [paramValidations.id],
+  getCategoryBySlug: [paramValidations.slug],
 };
