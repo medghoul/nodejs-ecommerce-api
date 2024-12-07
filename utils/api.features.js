@@ -7,7 +7,7 @@ class ApiFeatures {
    * @param {Object} queryString - Request query parameters
    * @param {Object} paginator - Pagination utility with getPagingData method
    */
-  constructor(query, queryString, paginator) {
+    constructor(query, queryString, paginator) {
     if (!query || !queryString || !paginator) {
       throw new Error("ApiFeatures requires query, queryString and paginator");
     }
