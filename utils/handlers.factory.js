@@ -39,17 +39,27 @@ export const getAll = (Model) =>
   });
 
 /**
- * Creates a handler for getting a single document by ID
+ * Creates a handler for getting a single document by ID or slug
  * @function getOne
  * @param {import('mongoose').Model} Model - Mongoose model to perform get operation on
+ * @param {string} [identifier="id"] - Identifier to use (either "id" or "slug")
  * @param {Object} [popOptions] - Populate options for mongoose query
  * @returns {Function} Express middleware function that handles get one operation
  * @throws {ApiError} 404 if document is not found
  */
-export const getOne = (Model, popOptions) =>
+export const getOne = (Model, identifier = "id", popOptions) =>
   asyncHandler(async (req, res, next) => {
-    let query = Model.findById(req.params.id);
-    if (popOptions) query = query.populate(popOptions);
+    let query;
+    
+    if (identifier === "slug") {
+      query = Model.findOne({ slug: req.params.slug });
+    } else {
+      query = Model.findById(req.params.id);
+    }
+
+    if (popOptions) {
+      query = query.populate(popOptions);
+    }
 
     const doc = await query;
 
