@@ -12,6 +12,7 @@ import subCategoryValidation from "#validations/subcategory.validation.js";
 import { Router } from "express";
 import paginator from "../middlewares/paginator.js";
 import { validate } from "../middlewares/validate.js";
+import { generateSlug } from "#middlewares/slugify.middleware.js";
 
 // Create router with mergeParams option
 const router = Router({ mergeParams: true });
@@ -21,6 +22,7 @@ router
   .post(
     setCategoryIdToBody,
     validate(subCategoryValidation.createSubCategory),
+    generateSlug("name"),
     createSubCategory
   )
   .get(filterCategoryIdFromParams, paginator(10), getSubCategories);
@@ -34,7 +36,11 @@ router.get(
 router
   .route("/:id")
   .get(validate(subCategoryValidation.getSubCategoryById), getSubCategoryById)
-  .put(validate(subCategoryValidation.updateSubCategory), updateSubCategoryById)
+  .put(
+    validate(subCategoryValidation.updateSubCategory),
+    generateSlug("name"),
+    updateSubCategoryById
+  )
   .delete(
     validate(subCategoryValidation.deleteSubCategoryById),
     deleteSubCategoryById

@@ -1,9 +1,4 @@
-import slugify from "slugify";
-import asyncHandler from "express-async-handler";
 import Brand from "#models/brand.model.js";
-import Logger from "#utils/logger.js";
-import ApiResponse from "#utils/api.response.js";
-import ApiError from "#utils/api.error.js";
 import {
   deleteOne,
   createOne,
@@ -35,29 +30,9 @@ export const deleteBrand = deleteOne(Brand);
 // @desc Get a brand by slug
 // @route GET /api/v1/brands/:slug
 // @access Public
-export const getBrandBySlug = asyncHandler(async (req, res, next) => {
-  const brand = await Brand.findOne({ slug: req.params.slug });
-
-  if (!brand) {
-    return next(new ApiError(404, "Brand not found"));
-  }
-
-  res
-    .status(200)
-    .json(ApiResponse.success(200, "Brand retrieved successfully", brand));
-});
+export const getBrandBySlug = getOne(Brand, "slug");
 
 // @desc Get a brand by id
 // @route GET /api/v1/brands/:id
 // @access Public
-export const getBrandById = asyncHandler(async (req, res, next) => {
-  const brand = await Brand.findById(req.params.id);
-
-  if (!brand) {
-    return next(new ApiError(404, "Brand not found"));
-  }
-
-  res
-    .status(200)
-    .json(ApiResponse.success(200, "Brand retrieved successfully", brand));
-});
+export const getBrandById = getOne(Brand);
