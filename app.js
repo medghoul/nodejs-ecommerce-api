@@ -9,12 +9,21 @@ import ApiError from "#utils/api.error.js";
 import Logger from "#utils/logger.js";
 import express from "express";
 import morgan from "morgan";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+// Get the current file path and directory
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Static files
+app.use("/uploads",express.static(join(__dirname, "uploads")));
 
 if (config.NODE_ENV === "development") {
   app.use(morgan("dev"));
