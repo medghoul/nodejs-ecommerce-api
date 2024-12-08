@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Static files
-app.use("/uploads",express.static(join(__dirname, "uploads")));
+app.use("/uploads", express.static(join(__dirname, "uploads")));
 
 if (config.NODE_ENV === "development") {
   app.use(morgan("dev"));

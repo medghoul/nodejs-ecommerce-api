@@ -12,17 +12,17 @@ import categoryValidation from "#validations/category.validation.js";
 import { Router } from "express";
 import subcategoriesRoute from "#routes/subcategory.route.js";
 import { generateSlug } from "#middlewares/slugify.middleware.js";
-import { uploadCategoryImage, resizeCategoryImage } from "#controllers/categories.controller.js";
+import { uploadSingleImage, resizeImage } from "#middlewares/upload.images.js";
 const router = Router();
 
 router
   .route("/")
   .get(paginator(10), getCategories)
   .post(
-    uploadCategoryImage,
+    uploadSingleImage("image"),
     validate(categoryValidation.createCategory),
     generateSlug("name"),
-    resizeCategoryImage,
+    resizeImage("categories", 600, 600),
     createCategory
   );
 

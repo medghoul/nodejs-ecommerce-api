@@ -50,7 +50,7 @@ export const getAll = (Model) =>
 export const getOne = (Model, identifier = "id", popOptions) =>
   asyncHandler(async (req, res, next) => {
     let query;
-    
+
     if (identifier === "slug") {
       query = Model.findOne({ slug: req.params.slug });
     } else {
