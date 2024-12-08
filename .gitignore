@@ -38,3 +38,6 @@ coverage
 .idea/
 *.swp
 *.swo 
+
+# Static files
+uploads/
