@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { setImageUrl } from "#middlewares/set.image.url.js";
 
 const CategorySchema = new Schema(
   {
@@ -23,16 +24,7 @@ const CategorySchema = new Schema(
   { timestamps: true }
 );
 
-CategorySchema.post("init", (doc) => {
-  if (doc.image) {
-    doc.image = `${process.env.BASE_URL}/categories/${doc.image}`;
-  }
-});
-
-CategorySchema.post("save", (doc) => {
-  if (doc.image) {
-    doc.image = `${process.env.BASE_URL}/categories/${doc.image}`;
-  }
-});
+CategorySchema.post("init", setImageUrl("categories").init);
+CategorySchema.post("save", setImageUrl("categories").save);
 
 export default model("Category", CategorySchema);

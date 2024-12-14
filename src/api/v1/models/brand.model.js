@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-
+import { setImageUrl } from "#middlewares/set.image.url.js";
 const BrandSchema = new Schema(
   {
     name: {
@@ -22,5 +22,8 @@ const BrandSchema = new Schema(
   },
   { timestamps: true }
 );
+
+BrandSchema.post("init", setImageUrl("brands").init);
+BrandSchema.post("save", setImageUrl("brands").save);
 
 export default model("Brand", BrandSchema);

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { setImageUrl, setImagesUrl } from "#middlewares/set.image.url.js";
 
 const productSchema = new mongoose.Schema(
   {
@@ -84,6 +85,11 @@ productSchema.pre(/^find/, function (next) {
   this.populate({ path: "brand", select: "name _id" });
   next();
 });
+
+productSchema.post("init", setImageUrl("products", "imageCover").init);
+productSchema.post("save", setImageUrl("products", "imageCover").save);
+productSchema.post("init", setImagesUrl("products", "images").init);
+productSchema.post("save", setImagesUrl("products", "images").save);
 
 const Product = mongoose.model("Product", productSchema);
 

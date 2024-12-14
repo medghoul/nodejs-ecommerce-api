@@ -24,8 +24,8 @@ router
   .route("/")
   .get(paginator(10), getProducts)
   .post(
-    uploadMultipleImages("images", 5),
     uploadSingleImage("imageCover"),
+    uploadMultipleImages("images", 5),
     validate(productValidation.createProduct),
     generateSlug("title"),
     resizeImage("products", 600, 600),
@@ -43,8 +43,8 @@ router
   .route("/:id")
   .get(validate(productValidation.getProductById), getProductById)
   .put(
-    uploadMultipleImages("images", 5),
     uploadSingleImage("imageCover"),
+    uploadMultipleImages("images", 5),
     validate(productValidation.updateProduct),
     generateSlug("title"),
     resizeImage("products", 600, 600),
