@@ -23,4 +23,16 @@ const CategorySchema = new Schema(
   { timestamps: true }
 );
 
+CategorySchema.post("init", (doc) => {
+  if (doc.image) {
+    doc.image = `${process.env.BASE_URL}/categories/${doc.image}`;
+  }
+});
+
+CategorySchema.post("save", (doc) => {
+  if (doc.image) {
+    doc.image = `${process.env.BASE_URL}/categories/${doc.image}`;
+  }
+});
+
 export default model("Category", CategorySchema);

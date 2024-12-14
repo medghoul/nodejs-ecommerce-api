@@ -43,8 +43,12 @@ router
   .route("/:id")
   .get(validate(productValidation.getProductById), getProductById)
   .put(
+    uploadMultipleImages("images", 5),
+    uploadSingleImage("imageCover"),
     validate(productValidation.updateProduct),
     generateSlug("title"),
+    resizeImage("products", 600, 600),
+    resizeMultipleImages("products", 600, 600),
     updateProduct
   )
   .delete(validate(productValidation.deleteProductById), deleteProduct);

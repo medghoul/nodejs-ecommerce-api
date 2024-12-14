@@ -36,8 +36,10 @@ router
   .route("/:id")
   .get(validate(categoryValidation.getCategoryById), getCategoryById)
   .put(
+    uploadSingleImage("image"),
     validate(categoryValidation.updateCategory),
     generateSlug("name"),
+    resizeImage("categories", 600, 600),
     updateCategory
   )
   .delete(validate(categoryValidation.deleteCategoryById), deleteCategory);
