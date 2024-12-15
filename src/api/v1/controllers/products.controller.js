@@ -1,5 +1,11 @@
 import Product from "#models/product.model.js";
-import { getOne, getAll, createOne, updateOne, deleteOne } from "#utils/handlers.factory.js";
+import {
+  getOne,
+  getAll,
+  createOne,
+  updateOne,
+  deleteOne,
+} from "#utils/handlers.factory.js";
 
 // @desc Get all products
 // @route GET /api/v1/products
@@ -16,7 +22,6 @@ export const createProduct = createOne(Product);
 // @access Private
 export const updateProduct = updateOne(Product);
 
-
 // @desc Delete a product
 // @route DELETE /api/v1/products/:id
 // @access Private
@@ -26,7 +31,6 @@ export const deleteProduct = deleteOne(Product);
 // @route GET /api/v1/products/:slug
 // @access Public
 export const getProductBySlug = getOne(Product, "slug");
-
 
 // @desc Get a product by id
 // @route GET /api/v1/products/:id

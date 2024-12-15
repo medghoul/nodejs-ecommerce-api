@@ -12,14 +12,17 @@ import categoryValidation from "#validations/category.validation.js";
 import { Router } from "express";
 import subcategoriesRoute from "#routes/subcategory.route.js";
 import { generateSlug } from "#middlewares/slugify.middleware.js";
+import { uploadSingleImage, resizeImage } from "#middlewares/upload.images.js";
 const router = Router();
 
 router
   .route("/")
   .get(paginator(10), getCategories)
   .post(
+    uploadSingleImage("image"),
     validate(categoryValidation.createCategory),
     generateSlug("name"),
+    resizeImage("categories", 600, 600),
     createCategory
   );
 
@@ -33,8 +36,10 @@ router
   .route("/:id")
   .get(validate(categoryValidation.getCategoryById), getCategoryById)
   .put(
+    uploadSingleImage("image"),
     validate(categoryValidation.updateCategory),
     generateSlug("name"),
+    resizeImage("categories", 600, 600),
     updateCategory
   )
   .delete(validate(categoryValidation.deleteCategoryById), deleteCategory);
