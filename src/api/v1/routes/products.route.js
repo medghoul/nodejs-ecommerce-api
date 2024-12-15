@@ -12,24 +12,28 @@ import paginator from "../middlewares/paginator.js";
 import { validate } from "../middlewares/validate.js";
 import { generateSlug } from "#middlewares/slugify.middleware.js";
 import {
-  resizeImage,
-  resizeMultipleImages,
-  uploadMultipleImages,
-  uploadSingleImage,
+  resizeMixedImages,
+  uploadMixedImages,
 } from "#middlewares/upload.images.js";
-
 const router = Router();
 
 router
   .route("/")
   .get(paginator(10), getProducts)
   .post(
-    uploadSingleImage("imageCover"),
-    uploadMultipleImages("images", 5),
+    uploadMixedImages([
+      {
+        name: "imageCover",
+        maxCount: 1,
+      },
+      {
+        name: "images",
+        maxCount: 5,
+      },
+    ]),
     validate(productValidation.createProduct),
     generateSlug("title"),
-    resizeImage("products", 600, 600),
-    resizeMultipleImages("products", 600, 600),
+    resizeMixedImages("products", 600, 600),
     createProduct
   );
 
@@ -43,12 +47,19 @@ router
   .route("/:id")
   .get(validate(productValidation.getProductById), getProductById)
   .put(
-    uploadSingleImage("imageCover"),
-    uploadMultipleImages("images", 5),
+    uploadMixedImages([
+      {
+        name: "imageCover",
+        maxCount: 1,
+      },
+      {
+        name: "images",
+        maxCount: 5,
+      },
+    ]),
     validate(productValidation.updateProduct),
     generateSlug("title"),
-    resizeImage("products", 600, 600),
-    resizeMultipleImages("products", 600, 600),
+    resizeMixedImages("products", 600, 600),
     updateProduct
   )
   .delete(validate(productValidation.deleteProductById), deleteProduct);

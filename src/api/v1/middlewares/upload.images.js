@@ -21,9 +21,17 @@ const multerStorage = multer.memoryStorage();
  * @param {Function} cb - Callback function
  */
 const multerFilter = (req, file, cb) => {
-  if (!file.mimetype.startsWith("image")) {
-    return cb(new ApiError(400, "Only image files are allowed"), false);
+  const allowedFields = ["image", "imageCover", "images"];
+  if (!allowedFields.includes(file.fieldname)) {
+    return cb(
+      new ApiError(
+        400,
+        `Invalid field name. Allowed: ${allowedFields.join(", ")}`
+      ),
+      false
+    );
   }
+
   cb(null, true);
 };
 
@@ -74,6 +82,7 @@ export const uploadMixedImages = (fields) => upload.fields(fields);
  */
 export const resizeImage = (folder, width = null, height = null) =>
   asyncHandler(async (req, res, next) => {
+    Logger.info(`Request files: ${req.files}`);
     if (!req.file) return next();
 
     const filename = `${req.file.fieldname}-${Date.now()}-${uuidv4()}.jpeg`;
@@ -141,4 +150,66 @@ export const resizeMultipleImages = (folder, width = null, height = null) =>
     );
 
     next();
+  });
+
+/**
+ * Creates a middleware for processing mixed images (cover and multiple images)
+ * @function resizeMixedImages
+ * @param {string} folder - Destination folder for the processed images
+ * @param {number} [width=null] - Target width of the images
+ * @param {number} [height=null] - Target height of the images
+ * @returns {Function} Express middleware that processes mixed images
+ * @throws {ApiError} If image processing fails
+ */
+export const resizeMixedImages = (folder, width = null, height = null) =>
+  asyncHandler(async (req, res, next) => {
+    if (!req.files) return next();
+
+    try {
+      // Ensure upload directory exists
+      await fs.mkdir(`uploads/${folder}`, { recursive: true });
+
+      // Process cover image if exists
+      if (req.files.imageCover) {
+        const coverFilename = `imageCover-${Date.now()}-${uuidv4()}.jpeg`;
+
+        await sharp(req.files.imageCover[0].buffer)
+          .resize(width, height, {
+            fit: "contain",
+            background: { r: 255, g: 255, b: 255, alpha: 1 },
+          })
+          .toFormat("jpeg")
+          .jpeg({ quality: 90 })
+          .toFile(`uploads/${folder}/${coverFilename}`);
+
+        req.body.imageCover = coverFilename;
+      }
+
+      // Process additional images if they exist
+      if (req.files.images) {
+        req.body.images = [];
+
+        await Promise.all(
+          req.files.images.map(async (file) => {
+            const filename = `image-${Date.now()}-${uuidv4()}.jpeg`;
+
+            await sharp(file.buffer)
+              .resize(width, height, {
+                fit: "contain",
+                background: { r: 255, g: 255, b: 255, alpha: 1 },
+              })
+              .toFormat("jpeg")
+              .jpeg({ quality: 90 })
+              .toFile(`uploads/${folder}/${filename}`);
+
+            req.body.images.push(filename);
+          })
+        );
+      }
+
+      next();
+    } catch (error) {
+      Logger.error("Error processing images:", error);
+      return next(new ApiError(400, "Error processing images"));
+    }
   });
