@@ -21,7 +21,7 @@ const multerStorage = multer.memoryStorage();
  * @param {Function} cb - Callback function
  */
 const multerFilter = (req, file, cb) => {
-  const allowedFields = ["image", "imageCover", "images"];
+  const allowedFields = ["image", "imageCover", "images", "profileImage"];
   if (!allowedFields.includes(file.fieldname)) {
     return cb(
       new ApiError(
