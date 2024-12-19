@@ -11,7 +11,7 @@ import express from "express";
 import morgan from "morgan";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-
+import userRoutes from "#routes/user.route.js";
 // Get the current file path and directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -38,6 +38,7 @@ app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/subcategories", subCategoryRoutes);
 app.use("/api/v1/brands", brandRoutes);
 app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/users", userRoutes);
 // Not found middleware
 app.all("*", (req, res, next) => {
   Logger.error(`Route not found: ${req.originalUrl}`);
